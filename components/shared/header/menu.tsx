@@ -3,7 +3,7 @@
 import { ModeToggle } from './mode-toggle';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { EllipsisVertical, ShoppingCart, UserIcon } from 'lucide-react';
+import { Menu as Burger, ShoppingCart, UserIcon } from 'lucide-react';
 import {
   Sheet,
   SheetClose,
@@ -40,7 +40,7 @@ export default function Menu() {
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon">
-              <EllipsisVertical className="h-5 w-5" />
+              <Burger className="h-5 w-5" />
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
