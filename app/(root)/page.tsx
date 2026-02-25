@@ -1,7 +1,5 @@
-import { Button } from '@/components/ui/button';
-import Header from '@/components/shared/header';
-export function HomePage() {
+const HomePage = async () => {
   return <div></div>;
-}
+};
 
 export default HomePage;
