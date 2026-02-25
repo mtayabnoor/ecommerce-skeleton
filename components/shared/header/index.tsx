@@ -5,7 +5,7 @@ import Menu from './menu';
 
 export const Header = () => {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-backdrop-filter:bg-background/60 transition-colors">
       <div className="max-w-7xl lg:mx-auto p-5 md:px-10 w-full flex justify-between items-center">
         <div className="flex justify-start items-center gap-2">
           <Link href="/" className="flex justify-start items-center gap-2">
