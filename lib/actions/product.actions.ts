@@ -5,7 +5,7 @@ import { convertPrismaObjectToJSON } from '../utils';
 import { LATEST_PRODUCTS_LIMIT } from '../constants';
 import { Product } from '@/types';
 
-export async function getProducts(): Promise<Product[]> {
+async function getProducts(): Promise<Product[]> {
   const data = await prisma.product.findMany({
     take: LATEST_PRODUCTS_LIMIT,
     orderBy: { createdAt: 'desc' },
@@ -19,3 +19,5 @@ export async function getProducts(): Promise<Product[]> {
 
   return convertPrismaObjectToJSON(formattedProducts) as Product[];
 }
+
+export { getProducts };

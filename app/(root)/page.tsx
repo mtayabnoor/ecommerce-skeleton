@@ -1,7 +1,7 @@
 import { ProductList } from '@/components/product/product-list';
-import { getProducts } from '@/lib/actions/product.actions';
 import { LATEST_PRODUCTS_LIMIT } from '@/lib/constants';
 import { Product } from '@/types';
+import { getProducts } from '@/lib/actions/product.actions';
 
 const HomePage = async () => {
   const products: Product[] = await getProducts();
