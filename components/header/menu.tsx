@@ -15,7 +15,7 @@ import {
 import { APP_NAME } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
 
-export default function Menu() {
+function Menu() {
   return (
     <div className="flex justify-end gap-3">
       {/* ── Desktop nav ── */}
@@ -81,3 +81,5 @@ export default function Menu() {
     </div>
   );
 }
+
+export { Menu };

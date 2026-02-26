@@ -1,6 +1,6 @@
 import { APP_NAME } from '@/lib/constants';
 
-export const Footer = () => {
+function Footer() {
   const currentYear = new Date().getFullYear();
   return (
     <footer className="border-t bg-background">
@@ -9,6 +9,6 @@ export const Footer = () => {
       </div>
     </footer>
   );
-};
+}
 
-export default Footer;
+export { Footer };

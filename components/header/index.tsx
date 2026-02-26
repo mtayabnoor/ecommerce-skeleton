@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { APP_NAME } from '@/lib/constants';
-import Menu from './menu';
+import { Menu } from './menu';
 
-export const Header = () => {
+function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-backdrop-filter:bg-background/60 transition-colors">
       <div className="max-w-7xl lg:mx-auto p-5 md:px-10 w-full flex justify-between items-center">
@@ -25,6 +25,6 @@ export const Header = () => {
       </div>
     </header>
   );
-};
+}
 
-export default Header;
+export { Header };
