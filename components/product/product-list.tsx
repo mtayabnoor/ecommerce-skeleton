@@ -1,15 +1,16 @@
-import { ProductCard, type Product } from './product-card';
+import { ProductCard } from './product-card';
+import { Product } from '@/types';
 
 function ProductList({
   data,
   title,
   limit,
 }: {
-  data: { products: Product[] };
+  data: Product[];
   title?: string;
   limit?: number;
 }) {
-  const products = limit ? data.products.slice(0, limit) : data.products;
+  const products = limit ? data.slice(0, limit) : data;
   return (
     <div className="my-10">
       <h2 className="text-2xl font-bold tracking-tight mb-6">{title}</h2>
@@ -19,9 +20,7 @@ function ProductList({
             No products found
           </p>
         ) : (
-          products.map((product: Product) => (
-            <ProductCard key={product.slug} product={product} />
-          ))
+          products.map((product) => <ProductCard key={product.id} product={product} />)
         )}
       </div>
     </div>

@@ -5,21 +5,7 @@ import Link from 'next/link';
 import { Heart, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { ProductPrice } from './product-price';
-
-export interface Product {
-  name: string;
-  slug: string;
-  category: string;
-  description: string;
-  images: string[];
-  price: number;
-  brand: string;
-  rating: number;
-  numReviews: number;
-  stock: number;
-  isFeatured: boolean;
-  banner: string | null;
-}
+import { Product } from '@/types';
 
 function ProductCard({ product }: { product: Product }) {
   const [activeImage, setActiveImage] = useState(0);
@@ -47,7 +33,7 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <div className="group relative flex flex-col">
       {/* Image Section */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-muted">
+      <div className="relative aspect-3/4 w-full overflow-hidden rounded-sm bg-muted">
         <Link href={`/product/${product.slug}`} className="block h-full w-full">
           {product.images.length > 0 ? (
             <Image
