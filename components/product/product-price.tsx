@@ -3,7 +3,7 @@ function ProductPrice({ value }: { value: number | string }) {
   return (
     <p>
       <span className="text-xl">$</span>
-      {dollars}
+      <span className="text-xl">{dollars}</span>
       <span className="text-sm">.{cents}</span>
     </p>
   );

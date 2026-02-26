@@ -11,5 +11,11 @@ export async function getProducts(): Promise<Product[]> {
     orderBy: { createdAt: 'desc' },
   });
 
-  return convertPrismaObjectToJSON(data) as unknown as Product[];
+  const formattedProducts = data.map((product) => ({
+    ...product,
+    price: product.price.toString(),
+    rating: Number(product.rating),
+  }));
+
+  return convertPrismaObjectToJSON(formattedProducts) as Product[];
 }
