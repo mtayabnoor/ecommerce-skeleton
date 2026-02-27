@@ -3,7 +3,7 @@ import { LATEST_PRODUCTS_LIMIT } from '@/lib/constants';
 import { Product } from '@/types';
 import { getProducts } from '@/lib/actions/product.actions';
 
-const HomePage = async () => {
+export default async function HomePage() {
   const products: Product[] = await getProducts();
   return (
     <>
@@ -14,6 +14,4 @@ const HomePage = async () => {
       />
     </>
   );
-};
-
-export default HomePage;
+}

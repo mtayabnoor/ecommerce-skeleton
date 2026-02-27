@@ -14,4 +14,13 @@ async function getProducts(): Promise<Product[]> {
   return convertPrismaObjectToJSON(data) as Product[];
 }
 
-export { getProducts };
+async function getProductBySlug(slug: string): Promise<Product> {
+  console.log(slug);
+  const data = await prisma.product.findUnique({
+    where: { slug },
+  });
+
+  return convertPrismaObjectToJSON(data) as Product;
+}
+
+export { getProducts, getProductBySlug };
