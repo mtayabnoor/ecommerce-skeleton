@@ -1,10 +1,16 @@
-function ProductPrice({ value }: { value: number | string }) {
+function ProductPrice({
+  value,
+  className,
+}: {
+  value: number | string;
+  className?: string;
+}) {
   const [dollars, cents] = Number(value).toFixed(2).split('.');
   return (
-    <p>
-      <span className="text-xl">$</span>
+    <p className={className}>
+      <span className="text-sm align-super">$</span>
       <span className="text-xl">{dollars}</span>
-      <span className="text-sm">.{cents}</span>
+      <span className="text-sm align-super">{cents}</span>
     </p>
   );
 }

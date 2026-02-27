@@ -1,7 +1,7 @@
 import { getProductBySlug } from '@/lib/actions/product.actions';
 import { Product } from '@/types';
 import { notFound } from 'next/navigation';
-import { ProductDetails } from '@/components/product/product-details';
+import { ProductDetails2 } from '@/components/product/product-details-2';
 
 export default async function ProductPage({
   params,
@@ -13,5 +13,5 @@ export default async function ProductPage({
 
   if (!product) notFound();
 
-  return <ProductDetails product={product} />;
+  return <ProductDetails2 product={product} />;
 }
