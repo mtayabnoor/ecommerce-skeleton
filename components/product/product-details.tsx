@@ -1,183 +1,193 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
-import { Star, ShoppingCart, Truck, ShieldCheck, RotateCcw } from 'lucide-react';
+import { Heart, Truck, Globe, RotateCcw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
 import { ProductPrice } from './product-price';
+import { Rating } from './product-rating';
+import { ProductImages } from './product-images';
 import { Product } from '@/types';
 import Link from 'next/link';
 
 function ProductDetails({ product }: { product: Product }) {
-  const [activeImage, setActiveImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const isInStock = product.stock > 0;
-  const rating = Number(product.rating);
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (isNaN(value) || value < 1) {
+      setQuantity(1);
+    } else if (value > product.stock) {
+      setQuantity(product.stock);
+    } else {
+      setQuantity(value);
+    }
+  };
 
   return (
-    <section className="py-8">
-      {/* Breadcrumb */}
-      <nav className="mb-6 text-sm text-muted-foreground">
-        <ol className="flex items-center gap-1.5">
-          <li>
-            <Link href="/" className="hover:text-foreground transition-colors">
-              Home
-            </Link>
-          </li>
-          <li>/</li>
-          <li>
-            <Link href="/" className="hover:text-foreground transition-colors">
-              {product.category}
-            </Link>
-          </li>
-          <li>/</li>
-          <li className="text-foreground font-medium truncate max-w-[200px]">
-            {product.name}
-          </li>
-        </ol>
-      </nav>
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        {/* Left Column — Image Gallery */}
-        <div className="flex flex-col gap-4">
-          {/* Main Image */}
-          <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-muted">
-            {product.images.length > 0 ? (
-              <Image
-                src={product.images[activeImage]}
-                alt={product.name}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center">
-                <span className="text-muted-foreground">No image available</span>
+    <section className="py-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+        {/* Left — Images (3/5 columns) */}
+        <div className="md:col-span-3 min-w-0">
+          <div className="relative">
+            {/* Overlaid Badges */}
+            {(product.isFeatured || !isInStock) && (
+              <div className="absolute top-4 left-20 md:left-24 z-10 flex flex-col gap-1">
+                {product.isFeatured && (
+                  <Badge className="bg-foreground text-background text-xs rounded-none">
+                    New
+                  </Badge>
+                )}
+                {!isInStock && (
+                  <Badge variant="destructive" className="text-xs rounded-none">
+                    Sold out
+                  </Badge>
+                )}
               </div>
             )}
+            <ProductImages images={product.images} name={product.name} />
           </div>
-
-          {/* Thumbnails */}
-          {product.images.length > 1 && (
-            <div className="flex items-center gap-2">
-              {product.images.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveImage(i)}
-                  className={`relative h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-md border-2 transition-all ${
-                    activeImage === i
-                      ? 'border-foreground ring-1 ring-foreground/20'
-                      : 'border-transparent hover:border-muted-foreground/40'
-                  }`}
-                >
-                  <Image
-                    src={img}
-                    alt={`${product.name} - Image ${i + 1}`}
-                    fill
-                    sizes="80px"
-                    className="object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* Right Column — Product Info */}
-        <div className="flex flex-col gap-5">
-          {/* Category & Stock Badges */}
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">{product.category}</Badge>
-            {product.isFeatured && <Badge>New</Badge>}
-            <Badge variant={isInStock ? 'outline' : 'destructive'}>
-              {isInStock ? `In Stock (${product.stock})` : 'Out of Stock'}
-            </Badge>
-          </div>
-
+        {/* Right — Product Info (2/5 columns) */}
+        <div className="md:col-span-2 flex flex-col gap-1 min-w-0">
           {/* Brand */}
-          <p className="text-sm font-medium text-muted-foreground tracking-wide uppercase">
+          <Link
+            href="/"
+            className="text-sm font-semibold underline underline-offset-2 decoration-foreground/60 hover:decoration-foreground transition-colors"
+          >
             {product.brand}
-          </p>
+          </Link>
 
           {/* Product Name */}
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight">
+          <h1 className="text-base font-normal leading-snug text-foreground">
             {product.name}
           </h1>
 
-          {/* Rating & Reviews */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-4 w-4 ${
-                    i < Math.round(rating)
-                      ? 'fill-amber-400 text-amber-400'
-                      : 'fill-muted text-muted'
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="text-sm font-medium">{rating.toFixed(1)}</span>
-            <span className="text-sm text-muted-foreground">
-              ({product.numReviews} {product.numReviews === 1 ? 'review' : 'reviews'})
-            </span>
+          {/* Rating */}
+          <div className="mt-1.5">
+            <Rating rating={Number(product.rating)} numReviews={product.numReviews} />
           </div>
-
-          <Separator />
 
           {/* Price */}
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold">
-              <ProductPrice value={product.price} />
-            </span>
+          <div className="mt-3">
+            <ProductPrice value={product.price} className="text-foreground font-bold" />
+            <span className="text-xs text-muted-foreground ml-1">incl. VAT</span>
           </div>
 
-          {/* Description */}
-          <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+          {/* Stock Status */}
+          <div className="mt-3">
+            {isInStock ? (
+              <span className="text-sm text-green-700 dark:text-green-400 font-medium">
+                ✓ In stock ({product.stock} available)
+              </span>
+            ) : (
+              <span className="text-sm text-destructive font-medium">
+                ✗ Currently out of stock
+              </span>
+            )}
+          </div>
 
-          <Separator />
+          {/* Quantity */}
+          {isInStock && (
+            <div className="mt-4 flex items-center gap-3">
+              <span className="text-sm font-medium">Qty</span>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 rounded-none"
+                  disabled={quantity <= 1}
+                  onClick={() => setQuantity(quantity - 1)}
+                >
+                  −
+                </Button>
+                <Input
+                  type="number"
+                  min={1}
+                  max={product.stock}
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  className="w-14 text-center h-9 rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 rounded-none"
+                  disabled={quantity >= product.stock}
+                  onClick={() => setQuantity(quantity + 1)}
+                >
+                  +
+                </Button>
+              </div>
+            </div>
+          )}
 
-          {/* Add to Cart */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          {/* Add to Bag + Wishlist */}
+          <div className="mt-5 flex items-center gap-2">
             <Button
               size="lg"
-              className="flex-1 sm:flex-none sm:min-w-[200px] gap-2"
+              className="flex-1 h-12 text-base font-semibold rounded-none"
               disabled={!isInStock}
             >
-              <ShoppingCart className="h-4 w-4" />
-              {isInStock ? 'Add to Cart' : 'Sold Out'}
+              {isInStock ? 'Add to bag' : 'Sold out'}
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-12 w-12 shrink-0 rounded-none"
+              onClick={() => setIsWishlisted((prev) => !prev)}
+              aria-label="Add to wishlist"
+            >
+              <Heart
+                className={`h-5 w-5 transition-colors ${
+                  isWishlisted ? 'fill-red-500 text-red-500' : 'fill-none text-foreground'
+                }`}
+              />
             </Button>
           </div>
 
-          {/* Trust Signals */}
-          <Card className="border-dashed">
-            <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4">
-              <div className="flex items-center gap-3">
-                <Truck className="h-5 w-5 text-muted-foreground shrink-0" />
-                <div>
-                  <p className="text-sm font-medium">Free Shipping</p>
-                  <p className="text-xs text-muted-foreground">On orders over $50</p>
+          {/* Description */}
+          <div className="mt-6">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {product.description}
+            </p>
+          </div>
+
+          <Separator className="my-4" />
+
+          {/* Shipping Info */}
+          <Card className="rounded-none border">
+            <CardContent className="p-0">
+              <div className="flex items-start gap-3 px-4 py-3">
+                <Truck className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold">Standard delivery</p>
+                  <p className="text-xs text-muted-foreground">2-4 business days</p>
                 </div>
+                <span className="text-sm font-semibold text-green-700 dark:text-green-400">
+                  free
+                </span>
               </div>
-              <div className="flex items-center gap-3">
+
+              <Separator />
+
+              <div className="flex items-center gap-3 px-4 py-3">
+                <Globe className="h-5 w-5 text-muted-foreground shrink-0" />
+                <p className="text-sm font-semibold">Free delivery and free returns</p>
+              </div>
+
+              <Separator />
+
+              <div className="flex items-center gap-3 px-4 py-3">
                 <RotateCcw className="h-5 w-5 text-muted-foreground shrink-0" />
-                <div>
-                  <p className="text-sm font-medium">Easy Returns</p>
-                  <p className="text-xs text-muted-foreground">30-day return policy</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="h-5 w-5 text-muted-foreground shrink-0" />
-                <div>
-                  <p className="text-sm font-medium">Secure Payment</p>
-                  <p className="text-xs text-muted-foreground">Encrypted checkout</p>
-                </div>
+                <p className="text-sm font-semibold">30 day return policy</p>
               </div>
             </CardContent>
           </Card>

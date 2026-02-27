@@ -10,7 +10,7 @@ function ProductPrice({
     <p className={className}>
       <span className="text-sm align-super">$</span>
       <span className="text-xl">{dollars}</span>
-      <span className="text-sm align-super">{cents}</span>
+      <span className="text-sm align-super">.{cents}</span>
     </p>
   );
 }

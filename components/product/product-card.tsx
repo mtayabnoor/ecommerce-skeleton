@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, ChevronRight } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { useState } from 'react';
 import { ProductPrice } from './product-price';
 import { Product } from '@/types';
@@ -16,14 +16,6 @@ function ProductCard({ product }: { product: Product }) {
   if (product.stock === 0) tags.push('Sold out');
   if (product.stock > 0 && product.stock <= 5) tags.push('Few left');
 
-  const handleNextImage = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (product.images.length > 1) {
-      setActiveImage((prev) => (prev + 1) % product.images.length);
-    }
-  };
-
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -33,7 +25,7 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <div className="group relative flex flex-col">
       {/* Image Section */}
-      <div className="relative aspect-3/4 w-full overflow-hidden rounded-sm bg-muted">
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
         <Link href={`/product/${product.slug}`} className="block h-full w-full">
           {product.images.length > 0 ? (
             <Image
@@ -41,7 +33,7 @@ function ProductCard({ product }: { product: Product }) {
               alt={product.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover transition-opacity duration-300"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-muted">
@@ -63,28 +55,13 @@ function ProductCard({ product }: { product: Product }) {
           />
         </button>
 
-        {/* Next Image Arrow */}
-        {product.images.length > 1 && (
-          <button
-            onClick={handleNextImage}
-            className="absolute right-3 bottom-14 flex h-8 w-8 items-center justify-center rounded-sm border border-border/60 bg-background/80 backdrop-blur-sm transition-all hover:bg-background hover:scale-105 opacity-0 group-hover:opacity-100"
-            aria-label="Next image"
-          >
-            <ChevronRight className="h-4 w-4 text-foreground" />
-          </button>
-        )}
-
         {/* Tag Badges */}
         {tags.length > 0 && (
           <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
             {tags.map((tag) => (
               <span
                 key={tag}
-                className={`rounded-sm px-2 py-0.5 text-[11px] font-semibold leading-tight ${
-                  tag === 'Sold out'
-                    ? 'bg-foreground text-background'
-                    : 'bg-foreground/85 text-background'
-                }`}
+                className="bg-foreground text-background px-2 py-0.5 text-[11px] font-semibold leading-tight"
               >
                 {tag}
               </span>
@@ -100,7 +77,7 @@ function ProductCard({ product }: { product: Product }) {
             <button
               key={i}
               onClick={() => setActiveImage(i)}
-              className={`relative h-10 w-8 overflow-hidden rounded-[3px] border transition-all ${
+              className={`relative h-10 w-8 overflow-hidden border transition-all ${
                 activeImage === i
                   ? 'border-foreground'
                   : 'border-border hover:border-foreground/50'
@@ -136,7 +113,9 @@ function ProductCard({ product }: { product: Product }) {
         </p>
 
         {/* Price */}
-        <ProductPrice value={product.price} />
+        <div className="mt-1">
+          <ProductPrice value={product.price} className="font-bold" />
+        </div>
       </div>
     </div>
   );
