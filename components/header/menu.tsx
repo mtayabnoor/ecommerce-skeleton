@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/sheet';
 import { APP_NAME } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 function Menu() {
   return (
@@ -21,18 +22,30 @@ function Menu() {
       {/* ── Desktop nav ── */}
       <nav className="hidden md:flex w-full max-w-xs items-center gap-1">
         <ModeToggle />
-        <Button asChild variant="ghost">
-          <Link href="/cart">
-            <ShoppingCart className="mr-1 h-4 w-4" />
-            Cart
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link href="/sign-in">
-            <UserIcon className="mr-1 h-4 w-4" />
-            Sign In
-          </Link>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button asChild variant="ghost">
+              <Link href="/cart">
+                <ShoppingCart className="mr-1 h-4 w-4" />
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Cart</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button asChild variant="ghost">
+              <Link href="/sign-in">
+                <UserIcon className="mr-1 h-4 w-4" />
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Sign In</p>
+          </TooltipContent>
+        </Tooltip>
       </nav>
 
       {/* ── Mobile nav ── */}
