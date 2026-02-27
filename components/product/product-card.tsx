@@ -25,7 +25,7 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <div className="group relative flex flex-col">
       {/* Image Section */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
+      <div className="relative aspect-3/4 w-full overflow-hidden bg-muted">
         <Link href={`/product/${product.slug}`} className="block h-full w-full">
           {product.images.length > 0 ? (
             <Image
