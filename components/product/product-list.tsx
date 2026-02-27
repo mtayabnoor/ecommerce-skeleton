@@ -20,7 +20,9 @@ function ProductList({
             No products found
           </p>
         ) : (
-          products.map((product) => <ProductCard key={product.id} product={product} />)
+          products.map((product: Product) => (
+            <ProductCard key={product.id} product={product} />
+          ))
         )}
       </div>
     </div>
