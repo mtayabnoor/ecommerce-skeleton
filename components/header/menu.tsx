@@ -1,55 +1,48 @@
 'use client';
 
-import { ModeToggle } from './mode-toggle';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Menu as Burger, ShoppingCart, UserIcon } from 'lucide-react';
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import { APP_NAME } from '@/lib/constants';
+import { ShoppingCart, UserIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Sun, Moon } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { Heart } from 'lucide-react';
 
 function Menu() {
+  const { theme, setTheme } = useTheme();
   return (
     <div className="flex justify-end gap-3">
       {/* ── Desktop nav ── */}
-      <nav className="hidden md:flex w-full max-w-xs items-center gap-1">
-        <ModeToggle />
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button asChild variant="ghost">
-              <Link href="/cart">
-                <ShoppingCart className="mr-1 h-4 w-4" />
-              </Link>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Cart</p>
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button asChild variant="ghost">
-              <Link href="/sign-in">
-                <UserIcon className="mr-1 h-4 w-4" />
-              </Link>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Sign In</p>
-          </TooltipContent>
-        </Tooltip>
+      <nav className="flex w-full max-w-xs items-center gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="cursor-pointer"
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        >
+          <Sun className="size-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute size-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        </Button>
+        <Separator orientation="vertical" />
+        <Button asChild variant="ghost">
+          <Link href="/sign-in">
+            <UserIcon className="size-6" />
+          </Link>
+        </Button>
+        <Button asChild variant="ghost">
+          <Link href="/wishlist">
+            <Heart className="size-6" />
+          </Link>
+        </Button>
+        <Button asChild variant="ghost">
+          <Link href="/cart">
+            <ShoppingCart className="size-6" />
+          </Link>
+        </Button>
       </nav>
 
       {/* ── Mobile nav ── */}
-      <nav className="md:hidden">
+      {/*<nav className="md:hidden">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon">
@@ -90,7 +83,7 @@ function Menu() {
             </div>
           </SheetContent>
         </Sheet>
-      </nav>
+      </nav> */}
     </div>
   );
 }
