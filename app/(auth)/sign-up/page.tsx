@@ -1,14 +1,14 @@
 import { Metadata } from 'next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import Image from 'next/image';
-import { SignInForm } from '@/components/signin-form';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { SignUpForm } from '@/components/signup-form';
 
 export const metadata: Metadata = {
-  title: 'Sign In',
+  title: 'Sign Up',
 };
 
-export default function SignInPage() {
+export default function SignUpPage() {
   return (
     <div className="w-full max-w-md mx-auto">
       <Card>
@@ -19,7 +19,7 @@ export default function SignInPage() {
           <CardTitle>Sign in or register</CardTitle>
         </CardHeader>
         <CardContent>
-          <SignInForm />
+          <SignUpForm />
         </CardContent>
       </Card>
     </div>

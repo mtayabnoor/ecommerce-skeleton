@@ -18,10 +18,11 @@ function SubmitButton() {
   );
 }
 
-export function SignInForm() {
+function SignInForm() {
   const [data, formAction] = useActionState(signInWithCredentials, {
     success: false,
     message: '',
+    fields: {} as Record<string, string[]>,
   });
 
   return (
@@ -30,10 +31,16 @@ export function SignInForm() {
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
           <Input id="email" name="email" type="email" required />
+          {data?.fields?.email && (
+            <p className="text-sm text-destructive">{data.fields.email[0]}</p>
+          )}
         </div>
         <div className="grid gap-2">
           <Label htmlFor="password">Password</Label>
           <Input id="password" name="password" type="password" required />
+          {data?.fields?.password && (
+            <p className="text-sm text-destructive">{data.fields.password[0]}</p>
+          )}
         </div>
 
         <SubmitButton />
@@ -51,3 +58,5 @@ export function SignInForm() {
     </form>
   );
 }
+
+export { SignInForm };

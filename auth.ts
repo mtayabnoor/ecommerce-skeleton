@@ -43,7 +43,13 @@ export const config = {
         if (!isPasswordValid) {
           return null;
         }
-        return { id: user.id, name: user.name, email: user.email, role: user.role };
+        return {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+        };
       },
     }),
   ],
