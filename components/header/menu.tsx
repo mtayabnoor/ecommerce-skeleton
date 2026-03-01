@@ -13,32 +13,65 @@ function Menu() {
   return (
     <div className="flex justify-end gap-3">
       {/* ── Desktop nav ── */}
-      <nav className="flex w-full max-w-xs items-center gap-1">
+      <nav className="flex w-full max-w-xs items-center gap-5">
         <Button
           variant="ghost"
           size="icon"
-          className="cursor-pointer"
+          className="cursor-pointer hover:bg-transparent"
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
         >
           <Sun className="size-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute size-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
         </Button>
         <Separator orientation="vertical" />
-        <Button asChild variant="ghost">
-          <Link href="/sign-in">
+        <div className="relative group z-50">
+          <Link
+            href="/sign-in"
+            className="flex items-center justify-center md:border-2 border-transparent group-hover:border-foreground group-hover:bg-background group-hover:dark:bg-background group-hover:border-b-transparent relative z-50"
+          >
             <UserIcon className="size-6" />
           </Link>
-        </Button>
-        <Button asChild variant="ghost">
-          <Link href="/wishlist">
-            <Heart className="size-6" />
-          </Link>
-        </Button>
-        <Button asChild variant="ghost">
-          <Link href="/cart">
-            <ShoppingCart className="size-6" />
-          </Link>
-        </Button>
+          <div className="absolute right-0 top-[25.5px] hidden md:group-hover:block w-72 z-40 bg-background border-2 border-foreground p-4 shadow-lg">
+            <div className="bg-background flex flex-col gap-1 rounded-none">
+              <Button
+                asChild
+                className="w-full rounded-none font-bold bg-foreground text-background hover:bg-foreground/90 h-12"
+              >
+                <Link href="/sign-in">Sign in</Link>
+              </Button>
+              <div className="text-sm mt-3 mb-2">
+                <Link
+                  href="/sign-up"
+                  className="font-bold underline text-foreground underline-offset-4 decoration-2"
+                >
+                  Register
+                </Link>
+                <span className="text-muted-foreground"></span>
+              </div>
+              <Separator className="my-2 bg-border" />
+              <div className="flex flex-col gap-4 mt-2">
+                <Link href="/account" className="text-sm hover:underline text-foreground">
+                  Your account
+                </Link>
+                <Link href="/orders" className="text-sm hover:underline text-foreground">
+                  Orders
+                </Link>
+                <Link href="/returns" className="text-sm hover:underline text-foreground">
+                  Return an item
+                </Link>
+                <Link href="/help" className="text-sm hover:underline text-foreground">
+                  Help & FAQ
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Link href="/wishlist">
+          <Heart className="size-6" />
+        </Link>
+        <Link href="/cart">
+          <ShoppingCart className="size-6" />
+        </Link>
       </nav>
 
       {/* ── Mobile nav ── */}
