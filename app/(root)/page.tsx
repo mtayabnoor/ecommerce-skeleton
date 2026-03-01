@@ -1,4 +1,4 @@
-import { ProductList } from '@/components/product/product-list';
+import { ProductList } from '@/components/product-list';
 import { LATEST_PRODUCTS_LIMIT } from '@/lib/constants';
 import { Product } from '@/types';
 import { getProducts } from '@/lib/actions/product.actions';

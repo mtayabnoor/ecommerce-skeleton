@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import { useState } from 'react';
-import { ProductPrice } from './product-price';
+import { ProductPrice } from '../product-details/product-price';
 import { Product } from '@/types';
 
 function ProductCard({ product }: { product: Product }) {
