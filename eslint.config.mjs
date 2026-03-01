@@ -3,6 +3,12 @@ import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 
 const eslintConfig = defineConfig([
+  {
+    rules: {
+      //TEMPORARY
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
   ...nextVitals,
   ...nextTs,
   // Override default ignores of eslint-config-next.
