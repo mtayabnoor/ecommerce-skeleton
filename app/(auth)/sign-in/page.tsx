@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function SignInPage() {
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-sm mx-auto">
       <Card>
         <CardHeader className="flex flex-col items-center justify-center">
           <Link href="/">
