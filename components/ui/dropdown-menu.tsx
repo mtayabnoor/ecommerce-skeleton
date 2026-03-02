@@ -161,6 +161,23 @@ function DropdownMenuSeparator({
   );
 }
 
+function DropdownMenuArrow({
+  className,
+  width = 12,
+  height = 7,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Arrow>) {
+  return (
+    <DropdownMenuPrimitive.Arrow
+      data-slot="dropdown-menu-arrow"
+      width={width}
+      height={height}
+      className={cn('fill-popover drop-shadow-[0_2px_0_hsl(var(--border))]', className)}
+      {...props}
+    />
+  );
+}
+
 function DropdownMenuShortcut({ className, ...props }: React.ComponentProps<'span'>) {
   return (
     <span
@@ -233,4 +250,5 @@ export {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
+  DropdownMenuArrow,
 };

@@ -5,6 +5,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuArrow,
 } from '../ui/dropdown-menu';
 import { Button } from '../ui/button';
 import { UserIcon } from 'lucide-react';
@@ -30,6 +31,7 @@ async function UserButton() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
+          <DropdownMenuArrow className="fill-foreground" />
           <DropdownMenuItem>
             <div className="w-full">
               <Button className="w-full">
@@ -59,7 +61,8 @@ async function UserButton() {
           <UserIcon className="size-6" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent sideOffset={6} align="end">
+      <DropdownMenuContent>
+        <DropdownMenuArrow className="fill-foreground" />
         <DropdownMenuLabel>
           <div className="flex flex-col">
             <p className="text-sm font-bold">{name}</p>
