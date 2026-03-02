@@ -37,21 +37,21 @@ function SignInForm() {
           <Label htmlFor="email">Email</Label>
           <Input id="email" name="email" type="email" required />
           {data?.fields?.email && (
-            <p className="text-sm text-destructive">{data.fields.email[0]}</p>
+            <p className="text-xs text-destructive">{data.fields.email[0]}</p>
           )}
         </div>
         <div className="grid gap-2">
           <Label htmlFor="password">Password</Label>
           <Input id="password" name="password" type="password" required />
           {data?.fields?.password && (
-            <p className="text-sm text-destructive">{data.fields.password[0]}</p>
+            <p className="text-xs text-destructive">{data.fields.password[0]}</p>
           )}
         </div>
 
         <SubmitButton />
         {data?.success && <p className="text-green-500 text-center">{data.message}</p>}
         {data?.success === false && (
-          <p className="text-destructive text-center">{data.message}</p>
+          <p className="text-xs text-destructive text-center">{data.message}</p>
         )}
       </div>
       <div className="mt-4 text-center text-sm">

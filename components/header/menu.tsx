@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
 import { Heart } from 'lucide-react';
-import { UserLink } from './user-link';
+import { UserButton } from './user-button';
 import { ModeToggle } from './mode-toggle';
 import { Separator } from '@/components/ui/separator';
 
@@ -11,7 +11,7 @@ function Menu() {
       <nav className="flex w-full max-w-xs items-center gap-5">
         <ModeToggle />
         <Separator orientation="vertical" />
-        <UserLink />
+        <UserButton />
         <Link href="/wishlist">
           <Heart className="size-6" />
         </Link>
