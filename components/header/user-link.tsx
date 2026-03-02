@@ -7,8 +7,6 @@ import { auth } from '@/auth';
 
 async function UserLink() {
   const session = await auth();
-  const userFirstName = session?.user?.firstName;
-  const userLastName = session?.user?.lastName;
   if (session) {
     return (
       <div className="relative group z-50">
@@ -20,6 +18,9 @@ async function UserLink() {
         </Link>
         <div className="absolute right-0 top-[25.5px] hidden md:group-hover:block w-72 z-40 bg-background border-2 border-foreground p-4 shadow-lg">
           <div className="bg-background flex flex-col gap-1 rounded-none">
+            <p className="text-sm font-bold">{session?.user?.name}</p>
+            <p className="text-xs text-muted-foreground">{session?.user?.email}</p>
+            <Separator className="my-2 bg-border" />
             <div className="flex flex-col gap-4 mt-2">
               <Link href="/account" className="text-sm hover:underline text-foreground">
                 Account
@@ -69,18 +70,6 @@ async function UserLink() {
               className="font-bold underline text-foreground underline-offset-4 decoration-2"
             >
               Register
-            </Link>
-          </div>
-          <Separator className="my-2 bg-border" />
-          <div className="flex flex-col gap-4 mt-2">
-            <Link href="/account" className="text-sm hover:underline text-foreground">
-              Your account
-            </Link>
-            <Link href="/orders" className="text-sm hover:underline text-foreground">
-              Orders
-            </Link>
-            <Link href="/help" className="text-sm hover:underline text-foreground">
-              Help &amp; FAQ
             </Link>
           </div>
         </div>

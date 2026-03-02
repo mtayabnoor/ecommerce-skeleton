@@ -6,16 +6,20 @@ import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { prisma } from '@/lib/prisma';
 import { hashSync } from 'bcrypt-ts-edge';
 import { redirect } from 'next/navigation';
+import { z } from 'zod';
 
 export async function signInWithCredentials(previousState: unknown, formData: FormData) {
   try {
     const parsed = signInSchema.safeParse(Object.fromEntries(formData.entries()));
 
     if (!parsed.success) {
+      const tree = z.treeifyError(parsed.error);
+
       const fieldErrors = Object.fromEntries(
-        Object.entries(parsed.error.format())
-          .filter(([key]) => key !== '_errors')
-          .map(([key, value]) => [key, (value as { _errors: string[] })._errors]),
+        Object.entries(tree.properties ?? {}).map(([key, value]) => [
+          key,
+          value?.errors ?? [],
+        ]),
       );
 
       return {
@@ -27,13 +31,20 @@ export async function signInWithCredentials(previousState: unknown, formData: Fo
 
     const callbackUrl = (formData.get('callbackUrl') as string) || '/';
 
-    await signIn('credentials', {
+    const result = await signIn('credentials', {
       email: parsed.data.email,
       password: parsed.data.password,
       redirect: false,
     });
 
-    // signIn succeeded — do a server-side redirect
+    if (!result || result.error) {
+      return {
+        success: false,
+        message: 'Invalid email or password',
+        fields: {},
+      };
+    }
+
     redirect(callbackUrl);
   } catch (error) {
     if (isRedirectError(error)) {
@@ -57,10 +68,13 @@ export async function signUpWithCredentials(previousState: unknown, formData: Fo
     const parsed = signUpSchema.safeParse(Object.fromEntries(formData.entries()));
 
     if (!parsed.success) {
+      const tree = z.treeifyError(parsed.error);
+
       const fieldErrors = Object.fromEntries(
-        Object.entries(parsed.error.format())
-          .filter(([key]) => key !== '_errors')
-          .map(([key, value]) => [key, (value as { _errors: string[] })._errors]),
+        Object.entries(tree.properties ?? {}).map(([key, value]) => [
+          key,
+          value?.errors ?? [],
+        ]),
       );
 
       return {
@@ -71,8 +85,8 @@ export async function signUpWithCredentials(previousState: unknown, formData: Fo
     }
 
     const { firstName, lastName, email, password } = parsed.data;
+    const plainPassword = password;
 
-    // Check if user already exists
     const userExists = await prisma.user.findFirst({
       where: { email },
     });
@@ -95,9 +109,14 @@ export async function signUpWithCredentials(previousState: unknown, formData: Fo
       },
     });
 
+    await signIn('credentials', {
+      email: parsed.data.email,
+      password: plainPassword,
+    });
+
     return {
       success: true,
-      message: 'User signed up successfully. Please log in.',
+      message: 'User registered successfully.',
       fields: {},
     };
   } catch (error) {

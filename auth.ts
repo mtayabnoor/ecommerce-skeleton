@@ -1,5 +1,5 @@
 import NextAuth from 'next-auth';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from './lib/prisma';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { compareSync } from 'bcrypt-ts-edge';
@@ -56,17 +56,15 @@ export const config = {
   callbacks: {
     async session({ session, token }) {
       session.user.id = token.sub as string;
-      session.user.firstName = token.firstName as string;
-      session.user.lastName = token.lastName as string;
-      session.user.role = token.role as string;
+      session.user.name = `${token.firstName} ${token.lastName}`;
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.firstName = user.firstName;
-        token.lastName = user.lastName;
-        token.role = user.role;
+        const u = user as any;
+        token.id = u.id;
+        token.firstName = u.firstName;
+        token.lastName = u.lastName;
       }
       return token;
     },

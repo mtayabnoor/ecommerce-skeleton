@@ -3,12 +3,22 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SignUpForm } from '@/components/signup-form';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Sign Up',
 };
 
-export default function SignUpPage() {
+export default async function SignUpPage(props: {
+  searchParams: Promise<{ callbackUrl?: string }>;
+}) {
+  const session = await auth();
+  if (session) {
+    const { callbackUrl } = await props.searchParams;
+    redirect(callbackUrl || '/');
+  }
+
   return (
     <div className="w-full max-w-sm mx-auto">
       <Card>
