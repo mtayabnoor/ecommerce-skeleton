@@ -5,6 +5,7 @@ import { signInSchema, signUpSchema } from '@/lib/validators';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { prisma } from '@/lib/prisma';
 import { hashSync } from 'bcrypt-ts-edge';
+import { redirect } from 'next/navigation';
 
 export async function signInWithCredentials(previousState: unknown, formData: FormData) {
   try {
@@ -24,17 +25,16 @@ export async function signInWithCredentials(previousState: unknown, formData: Fo
       };
     }
 
+    const callbackUrl = (formData.get('callbackUrl') as string) || '/';
+
     await signIn('credentials', {
       email: parsed.data.email,
       password: parsed.data.password,
       redirect: false,
     });
 
-    return {
-      success: true,
-      message: 'User signed in successfully',
-      fields: {},
-    };
+    // signIn succeeded — do a server-side redirect
+    redirect(callbackUrl);
   } catch (error) {
     if (isRedirectError(error)) {
       throw error;

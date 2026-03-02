@@ -3,12 +3,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import Image from 'next/image';
 import { SignInForm } from '@/components/signin-form';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Sign In',
 };
 
-export default function SignInPage() {
+export default async function SignInPage(props: {
+  searchParams: Promise<{ callbackUrl?: string }>;
+}) {
+  const { callbackUrl } = await props.searchParams;
+
+  const session = await auth();
+  if (session) {
+    redirect(callbackUrl || '/');
+  }
+
   return (
     <div className="w-full max-w-sm mx-auto">
       <Card>

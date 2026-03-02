@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { signInWithCredentials } from '@/lib/actions/user.actions';
+import { useSearchParams } from 'next/navigation';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -25,8 +26,12 @@ function SignInForm() {
     fields: {} as Record<string, string[]>,
   });
 
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
+
   return (
     <form action={formAction}>
+      <input type="hidden" name="callbackUrl" value={callbackUrl} />
       <div className="grid gap-4">
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
