@@ -12,11 +12,13 @@ import { UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { signOutAction } from '@/lib/actions/user.actions';
 import { auth } from '@/auth';
+import { headers } from 'next/headers';
 
 async function UserButton() {
-  const session = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  console.log(session);
 
-  const name = `${session?.user?.firstName} ${session?.user?.lastName}`;
+  const name = session?.user?.name;
   const email = session?.user?.email;
 
   if (!session) {
@@ -27,7 +29,9 @@ async function UserButton() {
             variant="ghost"
             className="cursor-pointer hover:bg-transparent dark:hover:bg-transparent"
           >
-            <UserIcon className="size-6" />
+            <div className="flex items-center justify-center">
+              <UserIcon className="size-6" />
+            </div>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SignUpForm } from '@/components/signup-form';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 
 export const metadata: Metadata = {
   title: 'Sign Up',
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 export default async function SignUpPage(props: {
   searchParams: Promise<{ callbackUrl?: string }>;
 }) {
-  const session = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
   if (session) {
     const { callbackUrl } = await props.searchParams;
     redirect(callbackUrl || '/');

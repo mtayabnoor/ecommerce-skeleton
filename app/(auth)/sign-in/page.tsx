@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { SignInForm } from '@/components/signin-form';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 
 export const metadata: Metadata = {
   title: 'Sign In',
@@ -15,7 +16,7 @@ export default async function SignInPage(props: {
 }) {
   const { callbackUrl } = await props.searchParams;
 
-  const session = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
   if (session) {
     redirect(callbackUrl || '/');
   }

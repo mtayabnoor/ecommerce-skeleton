@@ -1,11 +1,10 @@
 'use server';
 
-import { signIn, signOut } from '@/auth';
+import { auth } from '@/auth';
 import { signInSchema, signUpSchema } from '@/lib/validators';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
-import { prisma } from '@/lib/prisma';
-import { hashSync } from 'bcrypt-ts-edge';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 import { z } from 'zod';
 
 export async function signInWithCredentials(previousState: unknown, formData: FormData) {
@@ -30,20 +29,13 @@ export async function signInWithCredentials(previousState: unknown, formData: Fo
     }
 
     const callbackUrl = (formData.get('callbackUrl') as string) || '/';
+    const email = parsed.data.email;
+    const password = parsed.data.password;
 
-    const result = await signIn('credentials', {
-      email: parsed.data.email,
-      password: parsed.data.password,
-      redirect: false,
+    await auth.api.signInEmail({
+      body: { email, password },
+      headers: await headers(),
     });
-
-    if (!result || result.error) {
-      return {
-        success: false,
-        message: 'Invalid email or password',
-        fields: {},
-      };
-    }
 
     redirect(callbackUrl);
   } catch (error) {
@@ -60,7 +52,9 @@ export async function signInWithCredentials(previousState: unknown, formData: Fo
 }
 
 export async function signOutAction() {
-  await signOut();
+  await auth.api.signOut({
+    headers: await headers(),
+  });
 }
 
 export async function signUpWithCredentials(previousState: unknown, formData: FormData) {
@@ -84,44 +78,44 @@ export async function signUpWithCredentials(previousState: unknown, formData: Fo
       };
     }
 
+    const callbackUrl = (formData.get('callbackUrl') as string) || '/';
     const { firstName, lastName, email, password } = parsed.data;
-    const plainPassword = password;
 
-    const userExists = await prisma.user.findFirst({
-      where: { email },
+    // 🔥 THIS replaces your entire prisma + hash + signIn logic
+    await auth.api.signUpEmail({
+      body: {
+        name: `${firstName} ${lastName}`,
+        email,
+        password,
+        firstName,
+        lastName,
+        role: 'USER',
+      },
     });
 
-    if (userExists) {
+    await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+      },
+      headers: await headers(),
+    });
+
+    redirect(callbackUrl);
+  } catch (
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    error: any
+  ) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
+    if (error?.code === 'USER_ALREADY_EXISTS') {
       return {
         success: false,
         message: 'User with this email already exists',
         fields: {},
       };
-    }
-
-    await prisma.user.create({
-      data: {
-        firstName,
-        lastName,
-        email,
-        password: hashSync(password, 10),
-        role: 'user',
-      },
-    });
-
-    await signIn('credentials', {
-      email: parsed.data.email,
-      password: plainPassword,
-    });
-
-    return {
-      success: true,
-      message: 'User registered successfully.',
-      fields: {},
-    };
-  } catch (error) {
-    if (isRedirectError(error)) {
-      throw error;
     }
 
     return {
