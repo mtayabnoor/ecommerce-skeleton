@@ -104,7 +104,6 @@ export async function saveCart(items: CartItem[], sessionCartId: string) {
   }
 }
 
-// Merge guest cart into user cart on sign-in/sign-up
 export async function syncCartToUser(sessionCartId: string) {
   try {
     const userId = await getUserId();
@@ -114,7 +113,6 @@ export async function syncCartToUser(sessionCartId: string) {
     const guestCart = await prisma.cart.findFirst({ where: { sessionCartId } });
 
     if (guestCart && userCart && guestCart.id !== userCart.id) {
-      // Merge: deduplicate by productId, summing quantities
       const userItems = userCart.items as CartItem[];
       const guestItems = guestCart.items as CartItem[];
       const merged = new Map<string, CartItem>();

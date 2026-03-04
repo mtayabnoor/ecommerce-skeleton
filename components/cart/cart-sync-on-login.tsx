@@ -3,16 +3,18 @@
 import { useEffect } from 'react';
 import { getOrCreateCartSessionId } from '@/lib/utils';
 import { syncCartToUser } from '@/lib/actions/cart.actions';
+import { authClient } from '@/lib/auth-client';
 
 function CartSyncOnLogin() {
+  const { data: session } = authClient.useSession();
+  const userId = session?.user?.id;
+
   useEffect(() => {
-    async function syncCart() {
-      const sessionCartId = getOrCreateCartSessionId();
-      const res = await syncCartToUser(sessionCartId);
-      console.log('res', res);
-    }
-    syncCart();
-  }, []);
+    if (!userId) return;
+
+    const sessionCartId = getOrCreateCartSessionId();
+    syncCartToUser(sessionCartId).catch((e) => console.error('Cart sync failed:', e));
+  }, [userId]);
 
   return null;
 }
