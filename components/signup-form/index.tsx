@@ -56,6 +56,7 @@ function SignUpForm() {
       if (error) {
         setErrors({ form: [error.message || 'Sign up failed'] });
       }
+      // onLinkAccount in auth.ts automatically re-assigns the cart to the real user.
     } finally {
       setLoading(false);
     }

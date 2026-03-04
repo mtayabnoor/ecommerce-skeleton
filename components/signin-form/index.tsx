@@ -8,6 +8,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { useState } from 'react';
 import { signInSchema } from '@/lib/validators';
+import { syncCartToUser } from '@/lib/actions/cart.actions';
+import { getOrCreateCartSessionId } from '@/lib/utils';
 
 function SignInForm() {
   const [loading, setLoading] = useState(false);
@@ -37,7 +39,6 @@ function SignInForm() {
       const { error } = await authClient.signIn.email({
         email: result.data.email,
         password: result.data.password,
-        callbackURL: callbackUrl,
       });
 
       if (error) {
@@ -45,7 +46,15 @@ function SignInForm() {
         return;
       }
 
+      try {
+        const sessionCartId = getOrCreateCartSessionId();
+        await syncCartToUser(sessionCartId);
+      } catch (e) {
+        console.error('Cart sync failed:', e);
+      }
+
       router.push(callbackUrl);
+      router.refresh();
     } finally {
       setLoading(false);
     }

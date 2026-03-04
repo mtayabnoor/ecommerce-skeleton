@@ -3,12 +3,14 @@
 import { Button } from '../ui/button';
 import { CartItem } from '@/types';
 import { useCart } from '@/store/cart.store';
+import { toast } from 'sonner';
 
 function AddToCart({ isInStock, item }: { isInStock: boolean; item: CartItem }) {
   const { addItem } = useCart();
 
   const handleAddToCart = () => {
     addItem(item);
+    toast.success(`${item.name} added to cart`);
   };
 
   return (

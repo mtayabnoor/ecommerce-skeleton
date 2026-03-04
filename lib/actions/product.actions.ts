@@ -15,7 +15,6 @@ async function getProducts(): Promise<Product[]> {
 }
 
 async function getProductBySlug(slug: string): Promise<Product> {
-  console.log(slug);
   const data = await prisma.product.findUnique({
     where: { slug },
   });
