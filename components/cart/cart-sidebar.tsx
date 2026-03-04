@@ -49,10 +49,7 @@ export function CartSidebar() {
             </div>
           ) : (
             items.map((item) => (
-              <div
-                key={item.productId}
-                className="flex flex-row gap-4 border-b pb-4 pr-4"
-              >
+              <div key={item.productId} className="flex flex-row border-b py-4">
                 <div className="relative size-20 rounded overflow-hidden">
                   <Image src={item.image} alt={item.name} fill className="object-cover" />
                 </div>
