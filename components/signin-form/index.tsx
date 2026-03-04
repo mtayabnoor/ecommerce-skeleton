@@ -23,32 +23,33 @@ function SignInForm() {
     const formData = new FormData(event.currentTarget);
     const rawData = Object.fromEntries(formData.entries());
 
-    // 1. Validate with Zod first
     const result = signInSchema.safeParse(rawData);
 
     if (!result.success) {
-      // Flatten Zod errors into a readable object
       setErrors(result.error.flatten().fieldErrors);
       return;
     }
 
     setErrors({});
     setLoading(true);
-    const { data, error } = await authClient.signIn.email({
-      email: result.data.email,
-      password: result.data.password,
-      callbackURL: callbackUrl,
-    });
 
-    if (error) {
-      setErrors({ form: [error.message || 'Sign in failed'] });
-    } else {
+    try {
+      const { error } = await authClient.signIn.email({
+        email: result.data.email,
+        password: result.data.password,
+        callbackURL: callbackUrl,
+      });
+
+      if (error) {
+        setErrors({ form: [error.message || 'Sign in failed'] });
+        return;
+      }
+
       router.push(callbackUrl);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
-
   return (
     <form onSubmit={handleSubmit}>
       <input type="hidden" name="callbackUrl" value={callbackUrl} />

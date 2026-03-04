@@ -34,23 +34,31 @@ function SignUpForm() {
 
     setErrors({});
     setLoading(true);
-    const { data, error } = await authClient.signUp.email({
-      name: `${result.data.firstName} ${result.data.lastName}`,
-      email: result.data.email,
-      password: result.data.password,
-      firstName: result.data.firstName,
-      lastName: result.data.lastName,
-      role: 'USER',
-      callbackURL: callbackUrl,
-    });
 
-    if (error) {
-      setErrors({ form: [error.message || 'Sign up failed'] });
-    } else {
-      router.push(callbackUrl);
+    try {
+      const { error } = await authClient.signUp.email(
+        {
+          name: `${result.data.firstName} ${result.data.lastName}`,
+          email: result.data.email,
+          password: result.data.password,
+          firstName: result.data.firstName,
+          lastName: result.data.lastName,
+          role: 'USER',
+          callbackURL: callbackUrl,
+        },
+        {
+          onSuccess: () => {
+            router.push(callbackUrl);
+          },
+        },
+      );
+
+      if (error) {
+        setErrors({ form: [error.message || 'Sign up failed'] });
+      }
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
