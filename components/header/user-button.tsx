@@ -22,35 +22,17 @@ function UserButton() {
 
   if (!session) {
     return (
-      <DropdownMenu>
-        <DropdownMenuTrigger className="cursor-pointer outline-none">
-          <UserIcon className="size-6" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuArrow className="fill-foreground" />
-          <DropdownMenuItem>
-            <div className="w-full">
-              <Button className="w-full">
-                <Link href="/sign-in">Sign In</Link>
-              </Button>
-            </div>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link
-              href="/sign-up"
-              className="font-bold underline text-foreground underline-offset-4 decoration-2"
-            >
-              Register
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Link href="/sign-in">
+        <UserIcon className="size-6" />
+      </Link>
     );
   }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="cursor-pointer outline-none">
-        <UserIcon className="size-6" />
+        <div className="rounded-full bg-primary text-primary-foreground size-8 flex items-center justify-center">
+          <p>{name?.charAt(0).toUpperCase()}</p>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuArrow className="fill-foreground" />
