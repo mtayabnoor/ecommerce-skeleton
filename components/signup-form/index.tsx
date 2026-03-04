@@ -8,6 +8,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { signUpSchema } from '@/lib/validators';
+import { syncCartToUser } from '@/lib/actions/cart.actions';
+import { getOrCreateCartSessionId } from '@/lib/utils';
 
 function SignUpForm() {
   const [loading, setLoading] = useState(false);
@@ -23,11 +25,9 @@ function SignUpForm() {
     const formData = new FormData(event.currentTarget);
     const rawData = Object.fromEntries(formData.entries());
 
-    // 1. Validate with Zod first
     const result = signUpSchema.safeParse(rawData);
 
     if (!result.success) {
-      // Flatten Zod errors into a readable object
       setErrors(result.error.flatten().fieldErrors);
       return;
     }
@@ -49,6 +49,7 @@ function SignUpForm() {
         {
           onSuccess: () => {
             router.push(callbackUrl);
+            router.refresh();
           },
         },
       );
@@ -56,7 +57,6 @@ function SignUpForm() {
       if (error) {
         setErrors({ form: [error.message || 'Sign up failed'] });
       }
-      // onLinkAccount in auth.ts automatically re-assigns the cart to the real user.
     } finally {
       setLoading(false);
     }

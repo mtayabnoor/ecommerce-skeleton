@@ -3,7 +3,7 @@ import { CartItem } from '@/types';
 import { persist } from 'zustand/middleware';
 import currency from 'currency.js';
 import { getOrCreateCartSessionId } from '@/lib/utils';
-import { syncItemToDb } from '@/lib/actions/cart.actions';
+import { saveCart } from '@/lib/actions/cart.actions';
 
 type CartState = {
   items: CartItem[];
@@ -15,6 +15,11 @@ type CartState = {
   getTotal: () => number;
 };
 
+function syncToDb(items: CartItem[]) {
+  const sessionCartId = getOrCreateCartSessionId();
+  saveCart(items, sessionCartId).catch((err) => console.error('Cart sync failed:', err));
+}
+
 export const useCart = create<CartState>()(
   persist(
     (set, get): CartState => ({
@@ -22,32 +27,28 @@ export const useCart = create<CartState>()(
 
       setCart: (items) => set({ items }),
 
-      addItem: async (item) => {
+      addItem: (item) => {
         const existing = get().items.find((i) => i.productId === item.productId);
 
-        const sessionCartId = getOrCreateCartSessionId();
-
+        let newItems: CartItem[];
         if (existing) {
-          set({
-            items: get().items.map((i) =>
-              i.productId === item.productId
-                ? { ...i, quantity: i.quantity + item.quantity }
-                : i,
-            ),
-          });
+          newItems = get().items.map((i) =>
+            i.productId === item.productId
+              ? { ...i, quantity: i.quantity + item.quantity }
+              : i,
+          );
         } else {
-          set({ items: [...get().items, item] });
+          newItems = [...get().items, item];
         }
 
-        try {
-          await syncItemToDb(item, sessionCartId);
-        } catch (error) {
-          console.error('Failed to save item', error);
-        }
+        set({ items: newItems });
+        syncToDb(newItems);
       },
 
       removeItem: (productId) => {
-        set({ items: get().items.filter((i) => i.productId !== productId) });
+        const newItems = get().items.filter((i) => i.productId !== productId);
+        set({ items: newItems });
+        syncToDb(newItems);
       },
 
       updateItemQuantity: (productId, quantity) => {
@@ -55,14 +56,17 @@ export const useCart = create<CartState>()(
           get().removeItem(productId);
           return;
         }
-        set({
-          items: get().items.map((i) =>
-            i.productId === productId ? { ...i, quantity } : i,
-          ),
-        });
+        const newItems = get().items.map((i) =>
+          i.productId === productId ? { ...i, quantity } : i,
+        );
+        set({ items: newItems });
+        syncToDb(newItems);
       },
 
-      clearCart: () => set({ items: [] }),
+      clearCart: () => {
+        set({ items: [] });
+        syncToDb([]);
+      },
 
       getTotal: () => {
         return get().items.reduce((acc, item) => {

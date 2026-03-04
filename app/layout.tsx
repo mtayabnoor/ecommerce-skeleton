@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/providers/theme-provider';
 import { APP_NAME, APP_DESCRIPTION, APP_URL } from '@/lib/constants';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/sonner';
+import { CartSyncOnLogin } from '@/components/cart/cart-sync-on-login';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -34,6 +35,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TooltipProvider>
+              <CartSyncOnLogin />
               {children}
               <Toaster />
             </TooltipProvider>

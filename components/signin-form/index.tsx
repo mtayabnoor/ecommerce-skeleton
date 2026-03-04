@@ -36,25 +36,23 @@ function SignInForm() {
     setLoading(true);
 
     try {
-      const { error } = await authClient.signIn.email({
-        email: result.data.email,
-        password: result.data.password,
-      });
+      const { error } = await authClient.signIn.email(
+        {
+          email: result.data.email,
+          password: result.data.password,
+        },
+        {
+          onSuccess: () => {
+            router.push(callbackUrl);
+            router.refresh();
+          },
+        },
+      );
 
       if (error) {
         setErrors({ form: [error.message || 'Sign in failed'] });
         return;
       }
-
-      try {
-        const sessionCartId = getOrCreateCartSessionId();
-        await syncCartToUser(sessionCartId);
-      } catch (e) {
-        console.error('Cart sync failed:', e);
-      }
-
-      router.push(callbackUrl);
-      router.refresh();
     } finally {
       setLoading(false);
     }
