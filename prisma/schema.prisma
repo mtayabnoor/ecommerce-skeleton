@@ -93,17 +93,29 @@ model VerificationToken {
 }
 
 model Cart {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId        String?
-  sessionCartId String   @unique
-  items         Json[]   @db.Json
-  itemsPrice    Decimal  @default(0) @db.Decimal(12, 2)
-  taxPrice      Decimal  @default(0) @db.Decimal(12, 2)
-  totalPrice    Decimal  @default(0) @db.Decimal(12, 2)
-  shippingPrice Decimal  @default(0) @db.Decimal(12, 2)
-  taxRate       Decimal  @default(0) @db.Decimal(12, 2)
-  createdAt     DateTime @default(now()) @db.Timestamp(6)
-  updatedAt     DateTime @updatedAt @db.Timestamp(6)
+  itemsPrice    Decimal    @default(0) @db.Decimal(12, 2)
+  taxPrice      Decimal    @default(0) @db.Decimal(12, 2)
+  totalPrice    Decimal    @default(0) @db.Decimal(12, 2)
+  shippingPrice Decimal    @default(0) @db.Decimal(12, 2)
+  taxRate       Decimal    @default(0) @db.Decimal(12, 2)
+  createdAt     DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime   @updatedAt @db.Timestamp(6)
+  cartItems     CartItem[]
 
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CartItem {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cartId    String  @db.Uuid
+  productId String  @db.Uuid
+  quantity  Int
+  name      String
+  slug      String
+  image     String
+  price     Decimal @default(0) @db.Decimal(12, 2)
+
+  cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
 }

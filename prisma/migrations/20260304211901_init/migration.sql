@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "Product" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "category" TEXT NOT NULL,
@@ -83,6 +83,35 @@ CREATE TABLE "VerificationToken" (
     CONSTRAINT "VerificationToken_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Cart" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "userId" TEXT,
+    "itemsPrice" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "taxPrice" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "totalPrice" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "shippingPrice" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "taxRate" DECIMAL(12,2) NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(6) NOT NULL,
+
+    CONSTRAINT "Cart_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "CartItem" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "cartId" UUID NOT NULL,
+    "productId" UUID NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "image" TEXT NOT NULL,
+    "price" DECIMAL(12,2) NOT NULL DEFAULT 0,
+
+    CONSTRAINT "CartItem_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "product_slug_key" ON "Product"("slug");
 
@@ -94,3 +123,9 @@ ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId"
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Cart" ADD CONSTRAINT "Cart_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_cartId_fkey" FOREIGN KEY ("cartId") REFERENCES "Cart"("id") ON DELETE CASCADE ON UPDATE CASCADE;

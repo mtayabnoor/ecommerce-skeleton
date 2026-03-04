@@ -2,14 +2,16 @@
 
 import { Button } from '../ui/button';
 import { CartItem } from '@/types';
-import { useCart } from '@/store/cart.store';
 import { toast } from 'sonner';
+import { addToCart } from '@/lib/actions/cart.actions';
+import { useCart } from '@/store/cart.store';
 
 function AddToCart({ isInStock, item }: { isInStock: boolean; item: CartItem }) {
-  const { addItem } = useCart();
+  const setCart = useCart((s) => s.setCart);
 
-  const handleAddToCart = () => {
-    addItem(item);
+  const handleAddToCart = async () => {
+    const updatedItems = (await addToCart(item)) as CartItem[];
+    setCart(updatedItems);
     toast.success(`${item.name} added to cart`);
   };
 

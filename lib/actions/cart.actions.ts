@@ -1,150 +1,113 @@
 'use server';
 
 import { prisma } from '../prisma';
-import { auth } from '@/auth';
-import { headers } from 'next/headers';
+import { getOrCreateCart } from '../cart';
 import { CartItem } from '@/types';
-import { formatError, convertPrismaObjectToJSON } from '../utils';
-import currency from 'currency.js';
+import { convertPrismaObjectToJSON } from '../utils';
 
-// Helper: get session userId (or null for guests)
-async function getUserId() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  return session?.user?.id ?? null;
-}
+export async function addToCart(item: CartItem) {
+  const cart = await getOrCreateCart();
 
-// Helper: compute cart prices from items
-function calcPrices(items: CartItem[]) {
-  const itemsPrice = items.reduce(
-    (acc, i) => acc.add(currency(i.price).multiply(i.quantity)),
-    currency(0),
-  );
-  const shippingPrice = currency(itemsPrice.value > 100 ? 0 : 10);
-  const taxRate = currency(0.15);
-  const taxPrice = itemsPrice.multiply(taxRate.value);
-  const totalPrice = itemsPrice.add(shippingPrice).add(taxPrice);
+  const existing = await prisma.cartItem.findFirst({
+    where: { cartId: cart.id, productId: item.productId },
+  });
 
-  return {
-    itemsPrice: itemsPrice.toString(),
-    shippingPrice: shippingPrice.toString(),
-    taxRate: taxRate.toString(),
-    taxPrice: taxPrice.toString(),
-    totalPrice: totalPrice.toString(),
-  };
-}
-
-// Get cart by userId (logged in) or sessionCartId (guest)
-export async function getCart(sessionCartId: string) {
-  try {
-    const userId = await getUserId();
-
-    if (userId) {
-      let cart = await prisma.cart.findFirst({ where: { userId } });
-
-      if (!cart) {
-        cart = await prisma.cart.findFirst({ where: { sessionCartId } });
-        if (cart) {
-          cart = await prisma.cart.update({
-            where: { id: cart.id },
-            data: { userId },
-          });
-        }
-      }
-
-      return convertPrismaObjectToJSON(cart);
-    }
-
-    const cart = await prisma.cart.findFirst({ where: { sessionCartId } });
-    return convertPrismaObjectToJSON(cart);
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
-
-export async function saveCart(items: CartItem[], sessionCartId: string) {
-  try {
-    const prices = calcPrices(items);
-
-    const cart = await prisma.cart.findFirst({
-      where: { sessionCartId },
+  if (existing) {
+    await prisma.cartItem.update({
+      where: { id: existing.id },
+      data: { quantity: existing.quantity + item.quantity },
     });
-
-    if (items.length === 0 && cart) {
-      await prisma.cart.delete({ where: { id: cart.id } });
-      return { success: true, cart: null };
-    }
-
-    if (items.length === 0) {
-      return { success: true, cart: null };
-    }
-
-    let result;
-    if (cart) {
-      result = await prisma.cart.update({
-        where: { id: cart.id },
-        data: {
-          items: items as CartItem[],
-          ...prices,
-        },
-      });
-    } else {
-      result = await prisma.cart.create({
-        data: {
-          items: items as CartItem[],
-          sessionCartId,
-          ...prices,
-        },
-      });
-    }
-
-    return { success: true, cart: convertPrismaObjectToJSON(result) };
-  } catch (error) {
-    return { success: false, message: formatError(error) };
+  } else {
+    await prisma.cartItem.create({
+      data: {
+        cartId: cart.id,
+        productId: item.productId,
+        quantity: item.quantity,
+        name: item.name,
+        slug: item.slug,
+        image: item.image,
+        price: item.price,
+      },
+    });
   }
+
+  const updatedItems = await prisma.cartItem.findMany({
+    where: { cartId: cart.id },
+  });
+
+  return convertPrismaObjectToJSON(updatedItems);
 }
 
-export async function syncCartToUser(sessionCartId: string) {
-  try {
-    const userId = await getUserId();
-    if (!userId) return { success: false, message: 'Not authenticated' };
+export async function decreaseQuantity(productId: string) {
+  const cart = await getOrCreateCart();
 
-    const userCart = await prisma.cart.findFirst({ where: { userId } });
-    const guestCart = await prisma.cart.findFirst({ where: { sessionCartId } });
+  const item = await prisma.cartItem.findFirst({
+    where: { cartId: cart.id, productId },
+  });
 
-    if (guestCart && userCart && guestCart.id !== userCart.id) {
-      const userItems = userCart.items as CartItem[];
-      const guestItems = guestCart.items as CartItem[];
-      const merged = new Map<string, CartItem>();
+  if (!item) return;
 
-      for (const item of userItems) merged.set(item.productId, { ...item });
-      for (const item of guestItems) {
-        const existing = merged.get(item.productId);
-        if (existing) {
-          existing.quantity += item.quantity;
-        } else {
-          merged.set(item.productId, { ...item });
-        }
-      }
-
-      const mergedItems = Array.from(merged.values());
-      const prices = calcPrices(mergedItems);
-
-      await prisma.cart.update({
-        where: { id: userCart.id },
-        data: { items: mergedItems, sessionCartId, ...prices },
-      });
-
-      await prisma.cart.delete({ where: { id: guestCart.id } });
-    } else if (guestCart && !userCart) {
-      await prisma.cart.update({
-        where: { id: guestCart.id },
-        data: { userId },
-      });
-    }
-
-    return { success: true };
-  } catch (error) {
-    return { success: false, message: formatError(error) };
+  if (item.quantity <= 1) {
+    await prisma.cartItem.delete({ where: { id: item.id } });
+  } else {
+    await prisma.cartItem.update({
+      where: { id: item.id },
+      data: { quantity: item.quantity - 1 },
+    });
   }
+
+  const updatedItems = await prisma.cartItem.findMany({
+    where: { cartId: cart.id },
+  });
+
+  return convertPrismaObjectToJSON(updatedItems);
+}
+
+export async function increaseQuantity(productId: string) {
+  const cart = await getOrCreateCart();
+
+  const item = await prisma.cartItem.findFirst({
+    where: { cartId: cart.id, productId },
+  });
+
+  if (!item) return;
+
+  if (item.quantity <= 1) {
+    await prisma.cartItem.delete({ where: { id: item.id } });
+  } else {
+    await prisma.cartItem.update({
+      where: { id: item.id },
+      data: { quantity: item.quantity + 1 },
+    });
+  }
+
+  const updatedItems = await prisma.cartItem.findMany({
+    where: { cartId: cart.id },
+  });
+
+  return convertPrismaObjectToJSON(updatedItems);
+}
+
+export async function removeFromCart(productId: string) {
+  const cart = await getOrCreateCart();
+
+  await prisma.cartItem.deleteMany({
+    where: { cartId: cart.id, productId },
+  });
+
+  const updatedItems = await prisma.cartItem.findMany({
+    where: { cartId: cart.id },
+  });
+
+  return convertPrismaObjectToJSON(updatedItems);
+}
+
+export async function getCartItems() {
+  const cart = await getOrCreateCart();
+
+  const cartItems = await prisma.cartItem.findMany({
+    where: { cartId: cart.id },
+  });
+
+  return convertPrismaObjectToJSON(cartItems);
 }

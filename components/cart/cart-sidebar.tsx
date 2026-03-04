@@ -15,9 +15,15 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import {
+  decreaseQuantity,
+  increaseQuantity,
+  removeFromCart,
+} from '@/lib/actions/cart.actions';
+import { CartItem } from '@/types';
 
 export function CartSidebar() {
-  const { items, removeItem, updateItemQuantity, getTotal } = useCart();
+  const { items, setCart, getTotal } = useCart();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -66,9 +72,12 @@ export function CartSidebar() {
                       variant="outline"
                       size="icon"
                       className="size-6"
-                      onClick={() =>
-                        updateItemQuantity(item.productId, item.quantity - 1)
-                      }
+                      onClick={async () => {
+                        const updatedItems = (await decreaseQuantity(
+                          item.productId,
+                        )) as CartItem[];
+                        setCart(updatedItems);
+                      }}
                     >
                       <Minus className="size-3" />
                     </Button>
@@ -79,9 +88,12 @@ export function CartSidebar() {
                       variant="outline"
                       size="icon"
                       className="size-6"
-                      onClick={() =>
-                        updateItemQuantity(item.productId, item.quantity + 1)
-                      }
+                      onClick={async () => {
+                        const updatedItems = (await increaseQuantity(
+                          item.productId,
+                        )) as CartItem[];
+                        setCart(updatedItems);
+                      }}
                     >
                       <Plus className="size-3" />
                     </Button>
@@ -93,7 +105,12 @@ export function CartSidebar() {
                     variant="ghost"
                     size="icon"
                     className="size-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                    onClick={() => removeItem(item.productId)}
+                    onClick={async () => {
+                      const updatedItems = (await removeFromCart(
+                        item.productId,
+                      )) as CartItem[];
+                      setCart(updatedItems);
+                    }}
                   >
                     <Trash2 className="size-4" />
                   </Button>
