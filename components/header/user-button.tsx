@@ -19,7 +19,6 @@ function UserButton() {
 
   const name = session?.user?.name;
   const email = session?.user?.email;
-  console.log(session);
 
   if (!session) {
     return (

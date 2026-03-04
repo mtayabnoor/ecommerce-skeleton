@@ -6,7 +6,7 @@ import { signOutAction } from '@/lib/actions/user.actions';
 import { auth } from '@/auth';
 
 async function UserLink() {
-  const session = await auth();
+  const session = await auth.api.getSession();
   if (session) {
     return (
       <div className="relative group z-50">
