@@ -23,7 +23,7 @@ function UserButton() {
   if (!session) {
     return (
       <DropdownMenu>
-        <DropdownMenuTrigger className="outline-none">
+        <DropdownMenuTrigger className="cursor-pointer outline-none">
           <UserIcon className="size-6" />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
