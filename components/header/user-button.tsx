@@ -25,14 +25,7 @@ function UserButton() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger className="outline-none">
-          <Button
-            variant="ghost"
-            className="cursor-pointer hover:bg-transparent dark:hover:bg-transparent"
-          >
-            <div className="flex items-center justify-center">
-              <UserIcon className="size-6" />
-            </div>
-          </Button>
+          <UserIcon className="size-6" />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuArrow className="fill-foreground" />
@@ -57,13 +50,8 @@ function UserButton() {
   }
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="outline-none">
-        <Button
-          variant="ghost"
-          className="cursor-pointer hover:bg-transparent dark:hover:bg-transparent"
-        >
-          <UserIcon className="size-6" />
-        </Button>
+      <DropdownMenuTrigger className="cursor-pointer outline-none">
+        <UserIcon className="size-6" />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuArrow className="fill-foreground" />
