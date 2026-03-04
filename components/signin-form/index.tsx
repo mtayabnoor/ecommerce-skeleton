@@ -8,6 +8,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { useState } from 'react';
 import { signInSchema } from '@/lib/validators';
+import { syncCartToUser } from '@/lib/actions/cart.actions';
 
 function SignInForm() {
   const [loading, setLoading] = useState(false);
@@ -40,7 +41,7 @@ function SignInForm() {
           password: result.data.password,
         },
         {
-          onSuccess: () => {
+          onSuccess: async () => {
             router.push(callbackUrl);
             router.refresh();
           },

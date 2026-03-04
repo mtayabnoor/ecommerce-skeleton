@@ -8,6 +8,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { signUpSchema } from '@/lib/validators';
+import { syncCartToUser } from '@/lib/actions/cart.actions';
 
 function SignUpForm() {
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,7 @@ function SignUpForm() {
           callbackURL: callbackUrl,
         },
         {
-          onSuccess: () => {
+          onSuccess: async () => {
             router.push(callbackUrl);
             router.refresh();
           },
