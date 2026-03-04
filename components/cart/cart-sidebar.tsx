@@ -65,7 +65,7 @@ export function CartSidebar() {
                       className="size-6"
                       onClick={() => decrease(item.productId)}
                     >
-                      <Minus className="size-3" />
+                      -
                     </Button>
                     <span className="text-sm font-medium w-4 text-center">
                       {item.quantity}
@@ -76,7 +76,7 @@ export function CartSidebar() {
                       className="size-6"
                       onClick={() => increase(item.productId)}
                     >
-                      <Plus className="size-3" />
+                      +
                     </Button>
                   </div>
                 </div>

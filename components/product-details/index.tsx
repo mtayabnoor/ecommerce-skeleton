@@ -107,7 +107,7 @@ function ProductDetails({ product }: { product: Product }) {
                   disabled={quantity <= 1}
                   onClick={() => setQuantity(quantity - 1)}
                 >
-                  −
+                  -
                 </Button>
                 <Input
                   type="number"
