@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Product {
-  id          String   @id
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        String
   slug        String   @unique(map: "product_slug_key")
   category    String
@@ -47,11 +47,11 @@ model User {
   updatedAt     DateTime  @updatedAt @db.Timestamp(6)
   accounts      Account[]
   sessions      Session[]
+  carts         Cart[]
 }
 
 model Session {
   id        String   @id
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   token     String
   expiresAt DateTime @db.Timestamp(6)
@@ -60,11 +60,12 @@ model Session {
 
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @updatedAt @db.Timestamp(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Account {
   id                    String    @id
-  user                  User      @relation(fields: [userId], references: [id])
   userId                String
   accountId             String
   providerId            String
@@ -75,8 +76,11 @@ model Account {
   scope                 String?
   idToken               String?
   password              String?
-  createdAt             DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt             DateTime  @updatedAt @db.Timestamp(6)
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @db.Timestamp(6)
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 model VerificationToken {
@@ -86,4 +90,20 @@ model VerificationToken {
   expiresAt  DateTime @db.Timestamp(6)
   createdAt  DateTime @default(now()) @db.Timestamp(6)
   updatedAt  DateTime @updatedAt @db.Timestamp(6)
+}
+
+model Cart {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String?
+  sessionCartId String
+  items         Json[]   @db.Json
+  itemsPrice    Decimal  @default(0) @db.Decimal(12, 2)
+  taxPrice      Decimal  @default(0) @db.Decimal(12, 2)
+  totalPrice    Decimal  @default(0) @db.Decimal(12, 2)
+  shippingPrice Decimal  @default(0) @db.Decimal(12, 2)
+  taxRate       Decimal  @default(0) @db.Decimal(12, 2)
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime @updatedAt @db.Timestamp(6)
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

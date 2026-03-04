@@ -12,6 +12,7 @@ import { Rating } from './product-rating';
 import { ProductImages } from './product-images';
 import { Product } from '@/types';
 import Link from 'next/link';
+import { AddToCart } from './add-to-cart';
 
 function ProductDetails({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
@@ -131,13 +132,17 @@ function ProductDetails({ product }: { product: Product }) {
 
           {/* Add to Bag + Wishlist */}
           <div className="mt-5 flex items-center gap-2">
-            <Button
-              size="lg"
-              className="flex-1 h-12 text-base font-semibold rounded-none"
-              disabled={!isInStock}
-            >
-              {isInStock ? 'Add to bag' : 'Sold out'}
-            </Button>
+            <AddToCart
+              isInStock={isInStock}
+              item={{
+                productId: product.id,
+                name: product.name,
+                slug: product.slug,
+                price: product.price,
+                image: product.images[0],
+                quantity: quantity,
+              }}
+            />
             <Button
               variant="outline"
               size="icon"
