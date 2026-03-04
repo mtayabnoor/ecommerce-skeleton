@@ -8,8 +8,6 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { useState } from 'react';
 import { signInSchema } from '@/lib/validators';
-import { syncCartToUser } from '@/lib/actions/cart.actions';
-import { getOrCreateCartSessionId } from '@/lib/utils';
 
 function SignInForm() {
   const [loading, setLoading] = useState(false);
