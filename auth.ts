@@ -9,10 +9,11 @@ export const auth = betterAuth({
     provider: 'postgresql',
   }),
 
-  plugins: [nextCookies()],
+  plugins: [],
 
   emailAndPassword: {
     enabled: true,
+    minPasswordLength: 6,
     hashPassword: async (password: string) => {
       return hashSync(password, 10);
     },

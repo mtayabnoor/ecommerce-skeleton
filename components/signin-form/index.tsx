@@ -4,54 +4,78 @@ import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-import { useActionState } from 'react';
-import { useFormStatus } from 'react-dom';
-import { signInWithCredentials } from '@/lib/actions/user.actions';
-import { useSearchParams } from 'next/navigation';
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button variant="default" type="submit" className="w-full mt-4" disabled={pending}>
-      {pending ? 'Signing in...' : 'Sign In'}
-    </Button>
-  );
-}
+import { useSearchParams, useRouter } from 'next/navigation';
+import { authClient } from '@/lib/auth-client';
+import { useState } from 'react';
+import { signInSchema } from '@/lib/validators';
 
 function SignInForm() {
-  const [data, formAction] = useActionState(signInWithCredentials, {
-    success: false,
-    message: '',
-    fields: {} as Record<string, string[]>,
-  });
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const router = useRouter();
 
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const rawData = Object.fromEntries(formData.entries());
+
+    // 1. Validate with Zod first
+    const result = signInSchema.safeParse(rawData);
+
+    if (!result.success) {
+      // Flatten Zod errors into a readable object
+      setErrors(result.error.flatten().fieldErrors);
+      return;
+    }
+
+    setErrors({});
+    setLoading(true);
+    const { data, error } = await authClient.signIn.email({
+      email: result.data.email,
+      password: result.data.password,
+      callbackURL: callbackUrl,
+    });
+
+    if (error) {
+      setErrors({ form: [error.message || 'Sign in failed'] });
+    } else {
+      router.push(callbackUrl);
+    }
+
+    setLoading(false);
+  }
+
   return (
-    <form action={formAction}>
+    <form onSubmit={handleSubmit}>
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
       <div className="grid gap-4">
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
           <Input id="email" name="email" type="email" required />
-          {data?.fields?.email && (
-            <p className="text-xs text-destructive">{data.fields.email[0]}</p>
-          )}
+          {errors?.email && <p className="text-xs text-destructive">{errors.email[0]}</p>}
         </div>
         <div className="grid gap-2">
           <Label htmlFor="password">Password</Label>
           <Input id="password" name="password" type="password" required />
-          {data?.fields?.password && (
-            <p className="text-xs text-destructive">{data.fields.password[0]}</p>
+          {errors?.password && (
+            <p className="text-xs text-destructive">{errors.password[0]}</p>
           )}
         </div>
 
-        <SubmitButton />
-        {data?.success && <p className="text-green-500 text-center">{data.message}</p>}
-        {data?.success === false && (
-          <p className="text-xs text-destructive text-center">{data.message}</p>
+        <Button
+          variant="default"
+          type="submit"
+          className="w-full mt-4"
+          disabled={loading}
+        >
+          {loading ? 'Signing in...' : 'Sign In'}
+        </Button>
+        {errors?.form && (
+          <p className="text-xs text-destructive text-center">{errors.form[0]}</p>
         )}
       </div>
       <div className="mt-4 text-center text-sm">

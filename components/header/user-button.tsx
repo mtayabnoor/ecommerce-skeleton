@@ -1,3 +1,5 @@
+'use client';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,16 +12,14 @@ import {
 import { Button } from '../ui/button';
 import { UserIcon } from 'lucide-react';
 import Link from 'next/link';
-import { signOutAction } from '@/lib/actions/user.actions';
-import { auth } from '@/auth';
-import { headers } from 'next/headers';
+import { authClient } from '@/lib/auth-client';
 
-async function UserButton() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  console.log(session);
+function UserButton() {
+  const { data: session } = authClient.useSession();
 
   const name = session?.user?.name;
   const email = session?.user?.email;
+  console.log(session);
 
   if (!session) {
     return (
@@ -84,11 +84,16 @@ async function UserButton() {
           <Link href="/help">Help &amp; FAQ</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <form action={signOutAction} className="w-full p-2">
-          <Button variant="default" className="cursor-pointer w-full">
-            Sign Out
-          </Button>
-        </form>
+
+        <Button
+          variant="default"
+          className="cursor-pointer w-full"
+          onClick={async () => {
+            await authClient.signOut();
+          }}
+        >
+          Sign Out
+        </Button>
       </DropdownMenuContent>
     </DropdownMenu>
   );
