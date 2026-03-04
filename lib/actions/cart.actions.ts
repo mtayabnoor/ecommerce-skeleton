@@ -55,12 +55,6 @@ export async function decreaseQuantity(productId: string) {
       data: { quantity: item.quantity - 1 },
     });
   }
-
-  const updatedItems = await prisma.cartItem.findMany({
-    where: { cartId: cart.id },
-  });
-
-  return convertPrismaObjectToJSON(updatedItems);
 }
 
 export async function increaseQuantity(productId: string) {
@@ -72,20 +66,10 @@ export async function increaseQuantity(productId: string) {
 
   if (!item) return;
 
-  if (item.quantity <= 1) {
-    await prisma.cartItem.delete({ where: { id: item.id } });
-  } else {
-    await prisma.cartItem.update({
-      where: { id: item.id },
-      data: { quantity: item.quantity + 1 },
-    });
-  }
-
-  const updatedItems = await prisma.cartItem.findMany({
-    where: { cartId: cart.id },
+  await prisma.cartItem.update({
+    where: { id: item.id },
+    data: { quantity: item.quantity + 1 },
   });
-
-  return convertPrismaObjectToJSON(updatedItems);
 }
 
 export async function removeFromCart(productId: string) {
@@ -94,12 +78,6 @@ export async function removeFromCart(productId: string) {
   await prisma.cartItem.deleteMany({
     where: { cartId: cart.id, productId },
   });
-
-  const updatedItems = await prisma.cartItem.findMany({
-    where: { cartId: cart.id },
-  });
-
-  return convertPrismaObjectToJSON(updatedItems);
 }
 
 export async function getCartItems() {
