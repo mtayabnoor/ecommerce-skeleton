@@ -4,6 +4,7 @@ import { prisma } from '../prisma';
 import { getOrCreateCart } from '../cart';
 import { CartItem } from '@/types';
 import { convertPrismaObjectToJSON } from '../utils';
+import { cookies } from 'next/headers';
 
 export async function addToCart(item: CartItem) {
   const cart = await getOrCreateCart();
