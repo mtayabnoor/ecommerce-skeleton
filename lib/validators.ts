@@ -164,7 +164,7 @@ export const updateCartItemSchema = z.object({
 
 export const removeFromCartSchema = z.object({
   productId: z.string().min(1, 'Product ID is required'),
-  variantId: z.string().optional(),
+  variantId: z.string().nullish(),
 });
 
 // Search schemas
