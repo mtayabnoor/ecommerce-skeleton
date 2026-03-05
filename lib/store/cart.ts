@@ -162,7 +162,7 @@ export const useCart = create<CartState>()(
 
         debounceTimers[timerKey] = setTimeout(async () => {
           try {
-            await removeFromCart(item);
+            await removeFromCart(productId, variantId);
           } catch (err) {
             console.error('Failed to remove item', err);
             set({ cartItems: prevItems }); // Rollback
