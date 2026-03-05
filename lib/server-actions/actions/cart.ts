@@ -127,7 +127,7 @@ export async function addToCart(items: CartItem) {
     });
 
     if (existingItem) {
-      const newQuantity = existingItem.quantity + validatedData.quantity;
+      const newQuantity = validatedData.quantity;
 
       if (newQuantity > availableQuantity) {
         return {
