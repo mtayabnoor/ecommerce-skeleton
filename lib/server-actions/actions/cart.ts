@@ -219,12 +219,9 @@ export async function updateCartItem(
   }
 }
 
-export async function removeFromCart(item: CartItem) {
+export async function removeFromCart(productId: string, variantId?: string | null) {
   try {
-    const validatedData = removeFromCartSchema.parse({
-      productId: item.productId,
-      variantId: item.variantId,
-    });
+    const validatedData = removeFromCartSchema.parse({ productId, variantId });
 
     const cart = await getCartSession();
 
@@ -232,7 +229,7 @@ export async function removeFromCart(item: CartItem) {
       where: {
         cartId: cart.id,
         productId: validatedData.productId,
-        variantId: validatedData.variantId,
+        variantId: validatedData.variantId || null,
       },
     });
 
