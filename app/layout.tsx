@@ -8,6 +8,8 @@ import { Toaster } from '@/components/ui/sonner';
 import { CartInitializer } from '@/components/cart-initializer';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
