@@ -7,13 +7,12 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
     });
 
-    const formattedProducts = products.map((product) => ({
-      ...product,
-      price: product.price.toString(),
-      rating: Number(product.rating),
-    }));
+    //const formattedProducts = products.map((product) => ({
+      //...product,
+      //price: product.price.toString(),
+    //}));
 
-    return NextResponse.json(formattedProducts);
+    return NextResponse.json(products);
   } catch (error) {
     console.error('Failed to fetch products:', error);
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
