@@ -42,12 +42,6 @@ const prisma = new PrismaClient({ adapter }).$extends({
           return product.price.toString();
         },
       },
-      rating: {
-        needs: { rating: true },
-        compute(product) {
-          return product.rating.toString();
-        },
-      },
     },
   },
 });
