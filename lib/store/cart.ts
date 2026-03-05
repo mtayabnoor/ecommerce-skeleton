@@ -5,6 +5,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import currency from 'currency.js';
 import {
+  addToCart
   updateCartItem,
   removeFromCart,
   mergeGuestCart,
@@ -90,7 +91,6 @@ export const useCart = create<CartState>()(
 
         debounceTimers[timerKey] = setTimeout(async () => {
           try {
-            const { addToCart } = await import('@/lib/server-actions/actions/cart');
             await addToCart(item);
           } catch (err) {
             console.error('Failed to add item to server cart', err);
