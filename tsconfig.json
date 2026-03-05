@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "lib/server-actions/actions/cart.actions.ts.temp"  ],
   "exclude": ["node_modules"]
 }

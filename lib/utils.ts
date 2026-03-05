@@ -19,3 +19,26 @@ export function formatError(error: unknown): string {
   }
   return 'An unexpected error occurred';
 }
+
+export function formatCurrency(
+  amount: number | string | { toString(): string },
+  currency: string = 'USD',
+): string {
+  let numericAmount: number;
+
+  if (typeof amount === 'string') {
+    numericAmount = parseFloat(amount);
+  } else if (typeof amount === 'number') {
+    numericAmount = amount;
+  } else {
+    numericAmount = parseFloat(amount.toString());
+  }
+
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 2,
+  }).format(numericAmount);
+}
+
+export const formatPrice = formatCurrency;

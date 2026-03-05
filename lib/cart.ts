@@ -1,6 +1,6 @@
 import { cookies, headers } from 'next/headers';
 import { prisma } from './prisma';
-import { auth } from '@/auth';
+import { auth } from '@/lib/auth';
 
 export async function getOrCreateCart() {
   const cookieStore = await cookies();

@@ -1,0 +1,137 @@
+// Location: components/product-card.tsx
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { formatCurrency } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Star } from 'lucide-react';
+
+interface ProductCardProps {
+  id: string;
+  name: string;
+  slug: string;
+  price: number;
+  comparePrice?: number | null;
+  image?: string;
+  rating?: number;
+  reviewCount?: number;
+  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  category?: {
+    name: string;
+    slug: string;
+  };
+  inStock?: boolean;
+  badge?: string;
+}
+
+export function ProductCard({
+  id,
+  name,
+  slug,
+  price,
+  comparePrice,
+  image,
+  rating = 0,
+  reviewCount = 0,
+  status,
+  category,
+  inStock = true,
+  badge,
+}: ProductCardProps) {
+  const discountPercentage = comparePrice
+    ? Math.round(((comparePrice - price) / comparePrice) * 100)
+    : 0;
+
+  const isOnSale = comparePrice && comparePrice > price;
+
+  return (
+    <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg">
+      <div className="relative aspect-square overflow-hidden">
+        <Link href={`/product/${slug}`} className="block">
+          <Image
+            src={image || '/images/product-sample.svg'}
+            alt={name}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        </Link>
+
+        {/* Badges */}
+        <div className="absolute left-2 top-2 flex flex-col gap-2">
+          {isOnSale && (
+            <Badge variant="destructive" className="text-xs">
+              -{discountPercentage}%
+            </Badge>
+          )}
+          {badge && (
+            <Badge variant="secondary" className="text-xs">
+              {badge}
+            </Badge>
+          )}
+          {!inStock && (
+            <Badge variant="outline" className="bg-background/80 text-xs">
+              Out of Stock
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      <CardContent className="p-4">
+        {/* Category */}
+        {category && (
+          <Link
+            href={`/category/${category.slug}`}
+            className="text-xs text-muted-foreground transition-colors hover:text-primary"
+          >
+            {category.name}
+          </Link>
+        )}
+
+        {/* Product Name */}
+        <Link href={`/product/${slug}`}>
+          <h3 className="mb-2 mt-1 line-clamp-2 text-sm font-medium transition-colors hover:text-primary">
+            {name}
+          </h3>
+        </Link>
+
+        {/* Rating */}
+        {rating > 0 && (
+          <div className="mb-2 flex items-center gap-1">
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`h-3 w-3 ${
+                    i < Math.floor(rating)
+                      ? 'fill-yellow-400 text-yellow-400'
+                      : 'text-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-xs text-muted-foreground">({reviewCount})</span>
+          </div>
+        )}
+
+        {/* Price */}
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-semibold">{formatCurrency(price)}</span>
+          {comparePrice && comparePrice > price && (
+            <span className="text-sm text-muted-foreground line-through">
+              {formatCurrency(comparePrice)}
+            </span>
+          )}
+        </div>
+
+        {/* Stock Status */}
+        {inStock ? (
+          <p className="mt-1 text-xs text-green-600">In Stock</p>
+        ) : (
+          <p className="mt-1 text-xs text-red-600">Out of Stock</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

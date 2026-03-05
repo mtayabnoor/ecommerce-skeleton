@@ -5,7 +5,9 @@ import { ThemeProvider } from '@/providers/theme-provider';
 import { APP_NAME, APP_DESCRIPTION, APP_URL } from '@/lib/constants';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/sonner';
-import { CartInitializer } from '@/components/cart/cart-initializer';
+import { CartInitializer } from '@/components/cart-initializer';
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -36,7 +38,13 @@ export default function RootLayout({
           >
             <TooltipProvider>
               <CartInitializer />
-              {children}
+              <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-5 md:px-10">
+                  {children}
+                </main>
+                <Footer />
+              </div>
               <Toaster />
             </TooltipProvider>
           </ThemeProvider>
