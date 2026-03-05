@@ -91,7 +91,10 @@ export const useCart = create<CartState>()(
 
         debounceTimers[timerKey] = setTimeout(async () => {
           try {
-            await addToCart(item);
+            const latestItemState = get().cartItems.find(i => i.productId === item.productId);
+            
+            await addToCart(latestItemState);
+            
           } catch (err) {
             console.error('Failed to add item to server cart', err);
             set({ cartItems: prevItems }); // Rollback to state before this burst of clicks
