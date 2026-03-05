@@ -5,7 +5,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import currency from 'currency.js';
 import {
-  addToCart
+  addToCart,
   updateCartItem,
   removeFromCart,
   mergeGuestCart,
