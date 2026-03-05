@@ -92,7 +92,7 @@ export const useCart = create<CartState>()(
         debounceTimers[timerKey] = setTimeout(async () => {
           try {
             const latestItemState = get().cartItems.find(i => i.productId === item.productId);
-            if (!latestState) return;
+            if (!latestItemState) return;
 
             await addToCart(latestItemState);
             
@@ -138,11 +138,11 @@ export const useCart = create<CartState>()(
 
         debounceTimers[timerKey] = setTimeout(async () => {
           try {
-            const latestState = get().cartItems.find(
+            const latestItemState = get().cartItems.find(
               (i) => i.productId === productId && (i.variantId || null) === (variantId || null)
             );
-            if (!latestState) return;
-            await updateCartItem(latestState.productId, latestState.quantity, latestState.variantId);
+            if (!latestItemState) return;
+            await updateCartItem(latestItemState.productId, latestItemState.quantity, latestItemState.variantId);
           } catch (err) {
             console.error('Failed to update quantity', err);
             set({ cartItems: prevItems }); // Rollback
