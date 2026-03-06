@@ -583,6 +583,10 @@ export const getProductBySlug = createCachedFunction(
             altText: true,
           },
         },
+       inventory: {
+          select: {
+            available: true,
+        },
       },
     });
   },
