@@ -13,13 +13,16 @@ export function CartInitializer() {
 
   useEffect(() => {
     async function loadCart() {
-      if (userId) await mergeGuestCart();
-      const items = (await getCart())?.items as CartItem[];
+      if (userId) {
+        await mergeGuestCart();
+      }
+      const cartData = await getCart();
+      const items = (cartData?.items as CartItem[]) || []; 
       setCart(items);
     }
-
     loadCart();
   }, [setCart, userId]);
+
 
   return null;
 }
