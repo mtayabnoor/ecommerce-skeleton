@@ -15,18 +15,23 @@ import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 
 function UserButton() {
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
 
-  const name = session?.user?.name;
-  const email = session?.user?.email;
+  if (isPending) {
+    return <div className="size-6 rounded-full bg-background" />;
+  }
 
-  if (!session) {
+  if (!session?.user) {
     return (
       <Link href="/sign-in">
         <UserIcon className="size-6" />
       </Link>
     );
   }
+
+  const name = session?.user?.name;
+  const email = session?.user?.email;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="cursor-pointer outline-none">

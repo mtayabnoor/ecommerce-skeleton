@@ -47,23 +47,30 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600">
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-slate-950">
+        {/* Subtle top glow to add depth without being distracting */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950" />
+
+        <div className="relative mx-auto max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
+            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
               Welcome to Our
-              <span className="block text-yellow-300">Amazing Store</span>
+              {/* Gold gradient text effect */}
+              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200">
+                Amazing Store
+              </span>
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-200">
+
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400 font-light leading-relaxed">
               Discover incredible products at unbeatable prices. From the latest trends to
               timeless classics, we have everything you need to elevate your lifestyle.
             </p>
+
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Button
                 asChild
                 size="lg"
-                className="bg-white text-gray-900 hover:bg-gray-100"
+                className="bg-white text-slate-950 hover:bg-slate-200 transition-colors px-8 rounded-full"
               >
                 <Link href="/products">
                   Shop Now
@@ -74,7 +81,7 @@ export default function HomePage() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="border-white text-white hover:bg-white hover:text-gray-900"
+                className="border-slate-800 text-slate-300 hover:bg-slate-900 hover:text-white transition-colors px-8 rounded-full"
               >
                 <Link href="/category/featured">Browse Categories</Link>
               </Button>
