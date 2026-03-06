@@ -63,7 +63,7 @@ export const useCart = create<CartState>()(
       addItem: async (item: CartItem) => {
         const prevItems = get().cartItems;
         const existing = prevItems.find((i) => i.productId === item.productId);
-        
+
         // 1. Instantly update UI (No throttling!)
         let updatedItems;
         if (existing) {
@@ -91,11 +91,12 @@ export const useCart = create<CartState>()(
 
         debounceTimers[timerKey] = setTimeout(async () => {
           try {
-            const latestItemState = get().cartItems.find(i => i.productId === item.productId);
+            const latestItemState = get().cartItems.find(
+              (i) => i.productId === item.productId,
+            );
             if (!latestItemState) return;
 
             await addToCart(latestItemState);
-            
           } catch (err) {
             console.error('Failed to add item to server cart', err);
             set({ cartItems: prevItems }); // Rollback to state before this burst of clicks
@@ -110,7 +111,8 @@ export const useCart = create<CartState>()(
       ) => {
         const prevItems = get().cartItems;
         const item = prevItems.find(
-          (i) => i.productId === productId && (i.variantId || null) === (variantId || null),
+          (i) =>
+            i.productId === productId && (i.variantId || null) === (variantId || null),
         );
         if (!item) return;
 
@@ -139,10 +141,16 @@ export const useCart = create<CartState>()(
         debounceTimers[timerKey] = setTimeout(async () => {
           try {
             const latestItemState = get().cartItems.find(
-              (i) => i.productId === productId && (i.variantId || null) === (variantId || null)
+              (i) =>
+                i.productId === productId &&
+                (i.variantId || null) === (variantId || null),
             );
             if (!latestItemState) return;
-            await updateCartItem(latestItemState.productId, latestItemState.quantity, latestItemState.variantId);
+            await updateCartItem(
+              latestItemState.productId,
+              latestItemState.quantity,
+              latestItemState.variantId,
+            );
           } catch (err) {
             console.error('Failed to update quantity', err);
             set({ cartItems: prevItems }); // Rollback
@@ -153,29 +161,32 @@ export const useCart = create<CartState>()(
       removeItem: async (productId: string, variantId?: string | null) => {
         const prevItems = get().cartItems;
         const item = prevItems.find(
-          (i) => i.productId === productId && (i.variantId || null) === (variantId || null),
+          (i) =>
+            i.productId === productId && (i.variantId || null) === (variantId || null),
         );
         if (!item) return;
 
-        // 1. Instantly remove from UI
         set({
           cartItems: prevItems.filter(
-            (i) => !(i.productId === productId && (i.variantId || null) === (variantId || null)),
+            (i) =>
+              !(
+                i.productId === productId && (i.variantId || null) === (variantId || null)
+              ),
           ),
         });
 
-        // 2. Debounce the server call (less critical for removal, but prevents weird race conditions if they re-add quickly)
-        const timerKey = `remove-${productId}-${variantId || 'base'}`;
-        if (debounceTimers[timerKey]) clearTimeout(debounceTimers[timerKey]);
+        try {
+          const response = await removeFromCart(productId, variantId);
 
-        debounceTimers[timerKey] = setTimeout(async () => {
-          try {
-            await removeFromCart(productId, variantId);
-          } catch (err) {
-            console.error('Failed to remove item', err);
-            set({ cartItems: prevItems }); // Rollback
+          if (!response?.success) {
+            throw new Error(response?.error || 'Server rejected deletion');
           }
-        }, 300);
+        } catch (err) {
+          console.error('Failed to remove item', err);
+
+          set({ cartItems: prevItems });
+          import('sonner').then(({ toast }) => toast.error('Failed to remove item'));
+        }
       },
 
       clearCart: () => set({ cartItems: [] }),

@@ -595,7 +595,6 @@ export const getProductBySlug = createCachedFunction(
   3600,
 );
 
-
 export const getCategoryBySlug = createCachedFunction(
   async (slug: string) => {
     return await prisma.category.findUnique({

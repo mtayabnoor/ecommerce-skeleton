@@ -8,8 +8,8 @@ export async function GET() {
     });
 
     //const formattedProducts = products.map((product) => ({
-      //...product,
-      //price: product.price.toString(),
+    //...product,
+    //price: product.price.toString(),
     //}));
 
     return NextResponse.json(products);

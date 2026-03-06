@@ -17,12 +17,11 @@ export function CartInitializer() {
         await mergeGuestCart();
       }
       const cartData = await getCart();
-      const items = (cartData?.items as CartItem[]) || []; 
+      const items = (cartData?.items as CartItem[]) || [];
       setCart(items);
     }
     loadCart();
   }, [setCart, userId]);
-
 
   return null;
 }
