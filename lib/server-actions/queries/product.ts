@@ -583,9 +583,10 @@ export const getProductBySlug = createCachedFunction(
             altText: true,
           },
         },
-       inventory: {
+        inventory: {
           select: {
             available: true,
+          },
         },
       },
     });
@@ -593,6 +594,7 @@ export const getProductBySlug = createCachedFunction(
   [CACHE_TAGS.product],
   3600,
 );
+
 
 export const getCategoryBySlug = createCachedFunction(
   async (slug: string) => {
