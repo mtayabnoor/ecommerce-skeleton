@@ -102,9 +102,6 @@ function AddToCart({
               <Plus className="h-3 w-3" />
             </Button>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {maxQuantity > 0 ? `${maxQuantity} available` : 'Out of stock'}
-          </p>
         </div>
 
         <Button
