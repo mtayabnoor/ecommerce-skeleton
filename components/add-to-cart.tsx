@@ -51,8 +51,8 @@ function AddToCart({
         name: item.name,
         slug: item.slug,
         price: Number(item.price),
-        image: item.image || item.images?.[0]?.url || '',
-        stock: item.stock ?? item.inventory?.[0]?.available ?? 99,
+        image: item.images?.[0]?.url,
+        stock: item.inventory?.[0]?.available,
       } as any);
 
       toast.success(`Added ${quantity} item${quantity > 1 ? 's' : ''} to cart`);
