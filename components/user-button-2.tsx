@@ -51,7 +51,7 @@ async function UserLink() {
   return (
     <div className="relative group z-50">
       <Link
-        href="/sign-in"
+        href="/auth/signin"
         className="flex items-center justify-center md:border-2 border-transparent group-hover:border-foreground group-hover:bg-background group-hover:dark:bg-background group-hover:border-b-transparent relative z-50"
       >
         <UserIcon className="size-6" />
@@ -62,11 +62,11 @@ async function UserLink() {
             asChild
             className="w-full rounded-none font-bold bg-foreground text-background hover:bg-foreground/90 h-12"
           >
-            <Link href="/sign-in">Sign in</Link>
+            <Link href="/auth/signin">Sign in</Link>
           </Button>
           <div className="text-sm mt-3 mb-2">
             <Link
-              href="/sign-up"
+              href="/auth/signup"
               className="font-bold underline text-foreground underline-offset-4 decoration-2"
             >
               Register

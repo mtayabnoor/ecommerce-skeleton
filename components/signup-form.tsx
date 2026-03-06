@@ -113,7 +113,7 @@ function SignUpForm() {
       </div>
       <div className="mt-4 text-center text-sm">
         Already have an account?{' '}
-        <Link href="/sign-in" className="underline">
+        <Link href="/auth/signin" className="underline">
           Sign In
         </Link>
       </div>

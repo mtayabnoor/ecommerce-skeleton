@@ -40,10 +40,13 @@ function SignInForm() {
           password: result.data.password,
         },
         {
+          onRequest: () => {},
+          onResponse: () => {},
           onSuccess: async () => {
             router.push(callbackUrl);
             router.refresh();
           },
+          onError: (ctx) => {},
         },
       );
 
@@ -86,7 +89,7 @@ function SignInForm() {
       </div>
       <div className="mt-4 text-center text-sm">
         Don&apos;t have an account?{' '}
-        <Link href="/sign-up" className="underline">
+        <Link href="/auth/signup" className="underline">
           Sign Up
         </Link>
       </div>

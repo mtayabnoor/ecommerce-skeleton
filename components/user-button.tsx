@@ -23,7 +23,7 @@ function UserButton() {
 
   if (!session?.user) {
     return (
-      <Link href="/sign-in">
+      <Link href="/auth/signin">
         <UserIcon className="size-6" />
       </Link>
     );
@@ -49,7 +49,7 @@ function UserButton() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Link href="/account">Account</Link>
+          <Link href="/profile">Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Link href="/orders">Orders</Link>
