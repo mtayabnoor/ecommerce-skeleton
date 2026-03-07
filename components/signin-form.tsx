@@ -31,7 +31,6 @@ function SignInForm() {
     }
 
     setErrors({});
-    setLoading(true);
 
     try {
       const { error } = await authClient.signIn.email(
@@ -40,11 +39,14 @@ function SignInForm() {
           password: result.data.password,
         },
         {
-          onRequest: () => {},
-          onResponse: () => {},
+          onRequest: () => {
+            setLoading(true);
+          },
+          onResponse: () => {
+            setLoading(false);
+          },
           onSuccess: async () => {
             router.push(callbackUrl);
-            router.refresh();
           },
           onError: (ctx) => {},
         },
@@ -81,7 +83,7 @@ function SignInForm() {
           className="w-full mt-4"
           disabled={loading}
         >
-          {loading ? 'Signing in...' : 'Sign In'}
+          Sign In
         </Button>
         {errors?.form && (
           <p className="text-xs text-destructive text-center">{errors.form[0]}</p>

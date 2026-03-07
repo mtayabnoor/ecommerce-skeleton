@@ -31,7 +31,6 @@ function SignUpForm() {
     }
 
     setErrors({});
-    setLoading(true);
 
     try {
       const { error } = await authClient.signUp.email(
@@ -45,10 +44,16 @@ function SignUpForm() {
           callbackURL: callbackUrl,
         },
         {
+          onRequest: () => {
+            setLoading(true);
+          },
+          onResponse: () => {
+            setLoading(false);
+          },
           onSuccess: async () => {
             router.push(callbackUrl);
-            router.refresh();
           },
+          onError: (ctx) => {},
         },
       );
 
@@ -105,7 +110,7 @@ function SignUpForm() {
           className="w-full mt-4"
           disabled={loading}
         >
-          {loading ? 'Signing up...' : 'Sign Up'}
+          Sign Up
         </Button>
         {errors?.form && (
           <p className="text-xs text-destructive text-center">{errors.form[0]}</p>

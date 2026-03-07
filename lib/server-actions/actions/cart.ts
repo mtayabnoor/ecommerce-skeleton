@@ -151,7 +151,7 @@ export async function addToCart(items: CartItem) {
       });
     }
 
-    revalidateTag('cart', '');
+    revalidateTag('cart', 'max');
     return { success: true };
   } catch (error) {
     console.error('Add to cart error:', error);
@@ -211,7 +211,7 @@ export async function updateCartItem(
       });
     }
 
-    revalidateTag('cart', '');
+    revalidateTag('cart', 'max');
     return { success: true };
   } catch (error) {
     console.error('Update cart item error:', error);
@@ -233,7 +233,7 @@ export async function removeFromCart(productId: string, variantId?: string | nul
       },
     });
 
-    revalidateTag('cart', '');
+    revalidateTag('cart', 'max');
     return { success: true };
   } catch (error) {
     console.error('Remove from cart error:', error);
@@ -249,7 +249,7 @@ export async function clearCart() {
       where: { cartId: cart.id },
     });
 
-    revalidateTag('cart', '');
+    revalidateTag('cart', 'max');
     return { success: true };
   } catch (error) {
     console.error('Clear cart error:', error);
@@ -374,7 +374,7 @@ export async function mergeGuestCart() {
       where: { id: guestCart.id },
     });
 
-    revalidateTag('cart', '');
+    revalidateTag('cart', 'max');
     return { success: true };
   } catch (error) {
     console.error('Merge guest cart error:', error);

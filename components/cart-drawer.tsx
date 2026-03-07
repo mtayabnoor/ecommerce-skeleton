@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { formatCurrency } from '@/lib/utils';
 
 export function CartSidebar() {
   const { cartItems, updateQuantity, removeItem, totalAmount } = useCart();
@@ -64,7 +65,9 @@ export function CartSidebar() {
                 <div className="flex-1 flex flex-col justify-between">
                   <div>
                     <h3 className="text-sm font-semibold line-clamp-1">{item.name}</h3>
-                    <p className="text-sm text-muted-foreground">{item.price}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatCurrency(item.price)}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2 mt-2">
                     <Button
@@ -89,7 +92,9 @@ export function CartSidebar() {
                   </div>
                 </div>
                 <div className="flex flex-col justify-between items-end">
-                  <p className="text-sm font-semibold">{item.price}</p>
+                  <p className="text-sm font-semibold">
+                    {formatCurrency(item.price * item.quantity)}
+                  </p>
                   <Button
                     variant="ghost"
                     size="icon"

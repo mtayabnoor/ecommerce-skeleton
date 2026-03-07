@@ -2,6 +2,7 @@
 import { prisma } from '@/lib/prisma';
 import { createCachedFunction, CACHE_TAGS } from '@/lib/cache';
 import { ProductFilterInput } from '@/lib/validators';
+import { serialize } from '@/lib/utils';
 
 export const getProducts = createCachedFunction(
   async (filters?: Partial<ProductFilterInput>) => {
@@ -573,7 +574,7 @@ export const getAllProducts = createCachedFunction(
 
 export const getProductBySlug = createCachedFunction(
   async (slug: string) => {
-    return await prisma.product.findUnique({
+    const product = await prisma.product.findUnique({
       where: { slug },
       include: {
         category: true,
@@ -590,6 +591,7 @@ export const getProductBySlug = createCachedFunction(
         },
       },
     });
+    return serialize(product);
   },
   [CACHE_TAGS.product],
   3600,
