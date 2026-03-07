@@ -12,6 +12,7 @@ export const CACHE_TAGS = {
   order: 'order',
   inventory: 'inventory',
   user: 'user',
+  cart: 'cart',
 } as const;
 
 type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];

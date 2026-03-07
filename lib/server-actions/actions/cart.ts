@@ -12,6 +12,7 @@ import { auth } from '@/lib/auth';
 import { cookies, headers } from 'next/headers';
 import { nanoid } from 'nanoid';
 import { CartItem } from '@/types';
+import { createCachedFunction, CACHE_TAGS } from '@/lib/cache';
 
 // Get or create cart session
 async function getCartSession() {
@@ -317,6 +318,8 @@ export async function getCart() {
     };
   }
 }
+
+export const getCachedCart = createCachedFunction(getCart, [CACHE_TAGS.cart], 3000);
 
 export async function mergeGuestCart() {
   try {
