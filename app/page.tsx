@@ -47,31 +47,27 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-slate-950">
-        {/* Subtle top glow to add depth without being distracting */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950" />
+      <section className="relative overflow-hidden bg-background">
+        {/* Subtle top glow utilizing semantic background variables */}
+        <div className="absolute inset-0 bg-linear-to-b from-muted/50 to-transparent" />
 
         <div className="relative mx-auto max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+            <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
               Welcome to Our
-              {/* Gold gradient text effect */}
-              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200">
+              {/* Gold gradient text effect designed to work on dark/light themes */}
+              <span className="block mt-2 text-transparent bg-clip-text bg-linear-to-r from-yellow-500 via-amber-400 to-yellow-500 drop-shadow-sm">
                 Amazing Store
               </span>
             </h1>
 
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400 font-light leading-relaxed">
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground font-light leading-relaxed">
               Discover incredible products at unbeatable prices. From the latest trends to
               timeless classics, we have everything you need to elevate your lifestyle.
             </p>
 
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Button
-                asChild
-                size="lg"
-                className="bg-white text-slate-950 hover:bg-slate-200 transition-colors px-8 rounded-full"
-              >
+              <Button asChild size="lg" className="px-8 rounded-full shadow-lg">
                 <Link href="/products">
                   Shop Now
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -81,7 +77,7 @@ export default function HomePage() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="border-slate-800 text-slate-300 hover:bg-slate-900 hover:text-white transition-colors px-8 rounded-full"
+                className="px-8 rounded-full border-muted-foreground/30 hover:bg-muted"
               >
                 <Link href="/category/featured">Browse Categories</Link>
               </Button>
@@ -91,52 +87,56 @@ export default function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-gray-50 py-16">
+      <section className="bg-muted/30 py-16 border-y border-border/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-            <div className="text-center">
-              <div className="flex justify-center">
-                <Users className="h-12 w-12 text-blue-600" />
+            <div className="text-center p-6 bg-card rounded-2xl shadow-sm border border-border/40">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 bg-primary/10 rounded-full">
+                  <Users className="h-8 w-8 text-primary" />
+                </div>
               </div>
-              <h3 className="mt-4 text-3xl font-bold text-gray-900">10K+</h3>
-              <p className="text-gray-600">Happy Customers</p>
+              <h3 className="text-3xl font-bold text-foreground">10K+</h3>
+              <p className="text-muted-foreground mt-1">Happy Customers</p>
             </div>
-            <div className="text-center">
-              <div className="flex justify-center">
-                <TrendingUp className="h-12 w-12 text-green-600" />
+            <div className="text-center p-6 bg-card rounded-2xl shadow-sm border border-border/40">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 bg-primary/10 rounded-full">
+                  <TrendingUp className="h-8 w-8 text-primary" />
+                </div>
               </div>
-              <h3 className="mt-4 text-3xl font-bold text-gray-900">500+</h3>
-              <p className="text-gray-600">Products Available</p>
+              <h3 className="text-3xl font-bold text-foreground">500+</h3>
+              <p className="text-muted-foreground mt-1">Products Available</p>
             </div>
-            <div className="text-center">
-              <div className="flex justify-center">
-                <Star className="h-12 w-12 text-yellow-600" />
+            <div className="text-center p-6 bg-card rounded-2xl shadow-sm border border-border/40">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 bg-primary/10 rounded-full">
+                  <Star className="h-8 w-8 text-primary" />
+                </div>
               </div>
-              <h3 className="mt-4 text-3xl font-bold text-gray-900">4.9/5</h3>
-              <p className="text-gray-600">Average Rating</p>
+              <h3 className="text-3xl font-bold text-foreground">4.9/5</h3>
+              <p className="text-muted-foreground mt-1">Average Rating</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Featured Products */}
-      <section className="py-16">
+      <section className="bg-background py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
               Featured Products
             </h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Hand-picked selections from our best-selling items
+            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+              Hand-picked selections from our best-selling items, curated just for you.
             </p>
           </div>
-          <div className="mt-12">
-            <Suspense fallback={<ProductGridSkeleton />}>
-              <FeaturedProducts />
-            </Suspense>
-          </div>
-          <div className="mt-12 text-center">
-            <Button asChild variant="outline" size="lg">
+          <Suspense fallback={<ProductGridSkeleton />}>
+            <FeaturedProducts />
+          </Suspense>
+          <div className="mt-14 text-center">
+            <Button asChild variant="outline" size="lg" className="rounded-full">
               <Link href="/products">
                 View All Products
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -147,23 +147,21 @@ export default function HomePage() {
       </section>
 
       {/* New Arrivals */}
-      <section className="bg-gray-50 py-16">
+      <section className="bg-muted/30 py-20 border-t border-border/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
               New Arrivals
             </h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Fresh finds and latest additions to our collection
+            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+              Fresh finds and latest additions. Be the first to grab our newest trends.
             </p>
           </div>
-          <div className="mt-12">
-            <Suspense fallback={<ProductGridSkeleton />}>
-              <NewProducts />
-            </Suspense>
-          </div>
-          <div className="mt-12 text-center">
-            <Button asChild size="lg">
+          <Suspense fallback={<ProductGridSkeleton />}>
+            <NewProducts />
+          </Suspense>
+          <div className="mt-14 text-center">
+            <Button asChild size="lg" className="rounded-full shadow-md">
               <Link href="/products?sort=newest">
                 Shop New Arrivals
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -174,22 +172,23 @@ export default function HomePage() {
       </section>
 
       {/* Newsletter */}
-      <section className="bg-gray-900 py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+      <section className="bg-card py-20 border-t border-border">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center bg-muted/50 rounded-3xl p-8 sm:p-12 border border-border shadow-sm">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
               Stay Updated
             </h2>
-            <p className="mt-4 text-lg text-gray-300">
-              Subscribe to our newsletter for exclusive deals and new product alerts
+            <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto">
+              Subscribe to our newsletter for exclusive deals, early access to sales, and
+              new product alerts.
             </p>
-            <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <input
                 type="email"
-                placeholder="Enter your email"
-                className="w-full max-w-sm rounded-md border border-gray-700 bg-gray-800 px-4 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                placeholder="Enter your email address"
+                className="w-full sm:w-80 rounded-full border border-input bg-background px-6 py-3 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
               />
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+              <Button size="lg" className="w-full sm:w-auto rounded-full px-8 shadow-md">
                 Subscribe
               </Button>
             </div>
