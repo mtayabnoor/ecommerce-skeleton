@@ -3,7 +3,7 @@ import {
   getNewProducts,
 } from '@/lib/server-actions/queries/product';
 import { Metadata } from 'next';
-import { ProductGrid } from '@/components/product-grid';
+import { ProductCarousel } from '@/components/product-carousel';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -26,7 +26,7 @@ async function FeaturedProducts() {
     );
   }
 
-  return <ProductGrid products={products as any} />;
+  return <ProductCarousel products={products as any} />;
 }
 
 async function NewProducts() {
@@ -40,7 +40,8 @@ async function NewProducts() {
     );
   }
 
-  return <ProductGrid products={products.slice(0, 4) as any} />;
+  // Use a slightly larger slice for curating the carousel sliding effect
+  return <ProductCarousel products={products.slice(0, 8) as any} />;
 }
 
 export default function HomePage() {
