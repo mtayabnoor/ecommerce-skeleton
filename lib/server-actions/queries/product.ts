@@ -84,7 +84,7 @@ export const getProducts = createCachedFunction(
     };
   },
   [CACHE_TAGS.products],
-  300, // 5 minutes
+  300,
 );
 
 export const getProduct = createCachedFunction(

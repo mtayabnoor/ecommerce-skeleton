@@ -4,18 +4,17 @@ import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { useState } from 'react';
 import { signInSchema } from '@/lib/validators';
 
-function SignInForm() {
+function SignInForm({ callback }: { callback?: string }) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const router = useRouter();
 
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const callbackUrl = callback || '/';
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -47,6 +46,7 @@ function SignInForm() {
           },
           onSuccess: async () => {
             router.push(callbackUrl);
+            router.refresh();
           },
           onError: (ctx) => {},
         },

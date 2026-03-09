@@ -13,6 +13,7 @@ import { cookies, headers } from 'next/headers';
 import { nanoid } from 'nanoid';
 import { CartItem } from '@/types';
 import { createCachedFunction, CACHE_TAGS } from '@/lib/cache';
+import { uuid } from 'zod';
 
 // Get or create cart session
 async function getCartSession() {
@@ -49,7 +50,7 @@ async function getCartSession() {
     let sessionId = cookieStore.get('cart-session-id')?.value;
 
     if (!sessionId) {
-      sessionId = nanoid();
+      sessionId = crypto.randomUUID();
       cookieStore.set('cart-session-id', sessionId, {
         maxAge: 60 * 60 * 24 * 30, // 30 days
         httpOnly: true,
@@ -95,7 +96,6 @@ export async function addToCart(items: CartItem) {
       variantId: variantId || undefined,
     });
 
-    // Check if product exists and is active
     const product = await prisma.product.findUnique({
       where: { id: validatedData.productId },
       select: {

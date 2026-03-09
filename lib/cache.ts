@@ -1,18 +1,17 @@
-// lib/cache.ts
 import { revalidateTag, unstable_cache } from 'next/cache';
 import { cache } from 'react';
+import { APP_CACHE_VERSION } from './constants';
 
-// Cache tags for different data types
 export const CACHE_TAGS = {
-  products: 'products',
-  product: 'product',
-  categories: 'categories',
-  category: 'category',
-  orders: 'orders',
-  order: 'order',
-  inventory: 'inventory',
-  user: 'user',
-  cart: 'cart',
+  products: `${APP_CACHE_VERSION}-products`,
+  product: `${APP_CACHE_VERSION}-product`,
+  categories: `${APP_CACHE_VERSION}-categories`,
+  category: `${APP_CACHE_VERSION}-category`,
+  orders: `${APP_CACHE_VERSION}-orders`,
+  order: `${APP_CACHE_VERSION}-order`,
+  inventory: `${APP_CACHE_VERSION}-inventory`,
+  user: `${APP_CACHE_VERSION}-user`,
+  cart: `${APP_CACHE_VERSION}-cart`,
 } as const;
 
 type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];

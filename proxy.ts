@@ -1,0 +1,46 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getSessionCookie } from 'better-auth/cookies';
+
+const protectedRoutes = ['/profile', '/orders', '/help'];
+
+export default async function proxy(req: NextRequest) {
+  const nextUrl = req.nextUrl;
+
+  // 1. Read the Better Auth cookie
+  const sessionCookie = getSessionCookie(req);
+  const isLoggedIn = !!sessionCookie;
+
+  const isOnProtectedRoute = protectedRoutes.some((route) =>
+    nextUrl.pathname.startsWith(route),
+  );
+  const isOnAuthRoute = nextUrl.pathname.startsWith('/auth');
+
+  // --- THE CALLBACK LOGIC ---
+
+  // 2. Redirect unauthenticated users and SET the callback
+  if (isOnProtectedRoute && !isLoggedIn) {
+    const signInUrl = new URL('/auth/signin', nextUrl);
+
+    // Grab where they were trying to go, and attach it as '?callback=/profile'
+    signInUrl.searchParams.set('callback', nextUrl.pathname);
+
+    return NextResponse.redirect(signInUrl);
+  }
+
+  // 3. Redirect authenticated users and READ the callback
+  if (isOnAuthRoute && isLoggedIn) {
+    // If they have a callback in the URL, send them there. Otherwise, default to /profile.
+    const callbackUrl = nextUrl.searchParams.get('callback') || '/profile';
+
+    return NextResponse.redirect(new URL(callbackUrl, nextUrl));
+  }
+
+  // 4. Let all other requests proceed normally
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$|robots.txt|sitemap.xml).*)',
+  ],
+};

@@ -13,9 +13,13 @@ import { Button } from './ui/button';
 import { UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
+import { useRouter, usePathname } from 'next/navigation';
 
 function UserButton() {
   const { data: session, isPending } = authClient.useSession();
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   if (isPending) {
     return <div className="size-6 rounded-full bg-background" />;
@@ -39,7 +43,7 @@ function UserButton() {
           <p>{name?.charAt(0).toUpperCase()}</p>
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className="w-56">
         <DropdownMenuArrow className="fill-foreground" />
         <DropdownMenuLabel>
           <div className="flex flex-col">
@@ -64,6 +68,8 @@ function UserButton() {
           className="cursor-pointer w-full"
           onClick={async () => {
             await authClient.signOut();
+            router.push(`/auth/signin?callback=${pathname}`);
+            router.refresh();
           }}
         >
           Sign Out

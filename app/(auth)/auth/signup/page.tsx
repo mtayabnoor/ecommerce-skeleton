@@ -12,12 +12,12 @@ export const metadata: Metadata = {
 };
 
 export default async function SignUpPage(props: {
-  searchParams: Promise<{ callbackUrl?: string }>;
+  searchParams: Promise<{ callback?: string }>;
 }) {
+  const { callback } = await props.searchParams;
   const session = await auth.api.getSession({ headers: await headers() });
   if (session) {
-    const { callbackUrl } = await props.searchParams;
-    redirect(callbackUrl || '/');
+    redirect(callback || '/');
   }
 
   return (
@@ -30,7 +30,7 @@ export default async function SignUpPage(props: {
           <CardTitle>Sign in or register</CardTitle>
         </CardHeader>
         <CardContent>
-          <SignUpForm />
+          <SignUpForm callback={callback} />
         </CardContent>
       </Card>
     </div>

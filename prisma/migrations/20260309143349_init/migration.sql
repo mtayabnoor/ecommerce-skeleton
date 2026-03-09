@@ -9,7 +9,7 @@ CREATE TYPE "ProductStatus" AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
 
 -- CreateTable
 CREATE TABLE "users" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "firstName" TEXT NOT NULL DEFAULT 'no_name',
     "lastName" TEXT NOT NULL DEFAULT 'no_name',
     "name" TEXT NOT NULL DEFAULT 'no_name',
@@ -28,8 +28,8 @@ CREATE TABLE "users" (
 
 -- CreateTable
 CREATE TABLE "sessions" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "userId" UUID NOT NULL,
     "token" TEXT NOT NULL,
     "expiresAt" TIMESTAMP(6) NOT NULL,
     "ipAddress" TEXT,
@@ -42,8 +42,8 @@ CREATE TABLE "sessions" (
 
 -- CreateTable
 CREATE TABLE "accounts" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "userId" UUID NOT NULL,
     "accountId" TEXT NOT NULL,
     "providerId" TEXT NOT NULL,
     "accessToken" TEXT,
@@ -61,7 +61,7 @@ CREATE TABLE "accounts" (
 
 -- CreateTable
 CREATE TABLE "verification_tokens" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "identifier" TEXT NOT NULL,
     "value" TEXT NOT NULL,
     "expiresAt" TIMESTAMP(6) NOT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE "verification_tokens" (
 
 -- CreateTable
 CREATE TABLE "products" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "description" TEXT,
@@ -91,19 +91,19 @@ CREATE TABLE "products" (
     "seoDescription" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "categoryId" TEXT,
+    "categoryId" UUID,
 
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "categories" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "description" TEXT,
     "image" TEXT,
-    "parentId" TEXT,
+    "parentId" UUID,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -112,11 +112,11 @@ CREATE TABLE "categories" (
 
 -- CreateTable
 CREATE TABLE "product_images" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "url" TEXT NOT NULL,
     "altText" TEXT,
     "position" INTEGER NOT NULL DEFAULT 0,
-    "productId" TEXT NOT NULL,
+    "productId" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "product_images_pkey" PRIMARY KEY ("id")
@@ -124,12 +124,12 @@ CREATE TABLE "product_images" (
 
 -- CreateTable
 CREATE TABLE "product_variants" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "value" TEXT NOT NULL,
     "price" DECIMAL(10,2),
     "position" INTEGER NOT NULL DEFAULT 0,
-    "productId" TEXT NOT NULL,
+    "productId" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "product_variants_pkey" PRIMARY KEY ("id")
@@ -137,11 +137,11 @@ CREATE TABLE "product_variants" (
 
 -- CreateTable
 CREATE TABLE "inventory" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "quantity" INTEGER NOT NULL DEFAULT 0,
     "reserved" INTEGER NOT NULL DEFAULT 0,
     "available" INTEGER NOT NULL DEFAULT 0,
-    "productId" TEXT NOT NULL,
+    "productId" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -150,7 +150,7 @@ CREATE TABLE "inventory" (
 
 -- CreateTable
 CREATE TABLE "orders" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "orderNumber" TEXT NOT NULL,
     "status" "OrderStatus" NOT NULL DEFAULT 'PENDING',
     "subtotal" DECIMAL(10,2) NOT NULL,
@@ -182,7 +182,7 @@ CREATE TABLE "orders" (
     "shippedAt" TIMESTAMP(3),
     "deliveredAt" TIMESTAMP(3),
     "cancelledAt" TIMESTAMP(3),
-    "userId" TEXT,
+    "userId" UUID,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -191,9 +191,9 @@ CREATE TABLE "orders" (
 
 -- CreateTable
 CREATE TABLE "carts" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT,
-    "sessionId" TEXT,
+    "id" UUID NOT NULL,
+    "userId" UUID,
+    "sessionId" UUID,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -202,11 +202,11 @@ CREATE TABLE "carts" (
 
 -- CreateTable
 CREATE TABLE "cart_items" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "quantity" INTEGER NOT NULL DEFAULT 1,
-    "cartId" TEXT NOT NULL,
-    "productId" TEXT NOT NULL,
-    "variantId" TEXT,
+    "cartId" UUID NOT NULL,
+    "productId" UUID NOT NULL,
+    "variantId" UUID,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -215,13 +215,13 @@ CREATE TABLE "cart_items" (
 
 -- CreateTable
 CREATE TABLE "order_items" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "quantity" INTEGER NOT NULL,
     "price" DECIMAL(10,2) NOT NULL,
     "productName" TEXT NOT NULL,
     "productSku" TEXT,
-    "orderId" TEXT NOT NULL,
-    "productId" TEXT NOT NULL,
+    "orderId" UUID NOT NULL,
+    "productId" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "order_items_pkey" PRIMARY KEY ("id")
@@ -229,13 +229,13 @@ CREATE TABLE "order_items" (
 
 -- CreateTable
 CREATE TABLE "reviews" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "rating" INTEGER NOT NULL DEFAULT 5,
     "title" TEXT,
     "content" TEXT,
     "verified" BOOLEAN NOT NULL DEFAULT false,
-    "userId" TEXT NOT NULL,
-    "productId" TEXT NOT NULL,
+    "userId" UUID NOT NULL,
+    "productId" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
