@@ -23,7 +23,7 @@ function UserButton() {
   const pathname = usePathname();
 
   if (isPending) {
-    return <div className="size-6 rounded-full bg-background" />;
+    return <UserIcon className="size-6" />;
   }
 
   if (!session?.user) {
@@ -40,9 +40,7 @@ function UserButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="cursor-pointer outline-none">
-        <div className="rounded-full bg-primary text-primary-foreground size-8 flex items-center justify-center">
-          <p>{name?.charAt(0).toUpperCase()}</p>
-        </div>
+        <UserIcon className="size-6" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 cursor-pointer">
         <DropdownMenuArrow className="fill-foreground" />

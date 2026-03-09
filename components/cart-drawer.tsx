@@ -19,7 +19,7 @@ import { formatCurrency } from '@/lib/utils';
 
 export function CartSidebar() {
   const { cartItems, updateQuantity, removeItem, totalAmount } = useCart();
-  console.log(cartItems);
+
   const [isOpen, setIsOpen] = useState(false);
 
   return (

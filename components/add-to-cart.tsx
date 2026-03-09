@@ -41,7 +41,6 @@ function AddToCart({
 
   const handleAddToCart = async () => {
     setIsLoading(true);
-    console.log(item);
 
     try {
       await addItem({
