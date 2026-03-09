@@ -2,14 +2,14 @@
 
 import { ProductStatus, UserRole } from '@/lib/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
-import { hash } from 'bcrypt-ts-edge';
+import { hash } from 'bcrypt';
 
 async function main() {
   console.log('🌱 Starting database seed...');
 
   // Create admin user
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
-  const adminPassword = await hash('admin123', 10);
+  const adminPassword = await hash('admin123', 12);
 
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
