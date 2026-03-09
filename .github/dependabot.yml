@@ -13,7 +13,7 @@ updates:
       - 'mtayabnoor'
     labels:
       - 'dependencies'
-      - 'electron'
+      - 'ecommerce-skeleton'
       - 'automated'
     commit-message:
       prefix: 'chore'
