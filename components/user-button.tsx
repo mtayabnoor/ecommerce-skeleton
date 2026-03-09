@@ -68,7 +68,9 @@ function UserButton() {
           className="cursor-pointer w-full"
           onClick={async () => {
             await authClient.signOut();
-            router.push(`/auth/signin?callback=${pathname}`);
+            const params = new URLSearchParams();
+            params.set('callback', pathname);
+            router.push(`/auth/signin?${params.toString()}`);
             router.refresh();
           }}
         >
