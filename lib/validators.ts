@@ -21,8 +21,20 @@ export const signInSchema = z.object({
 });
 
 export const updateProfileSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
+  firstName: z.string().min(1, 'First name is required').optional(),
+  lastName: z.string().min(1, 'Last name is required').optional(),
+  email: z.string().email('Invalid email address').optional(),
+  paymentMethod: z.string().optional(),
+  address: z
+    .object({
+      line1: z.string().min(1, 'Address line 1 is required'),
+      line2: z.string().optional(),
+      city: z.string().min(1, 'City is required'),
+      state: z.string().min(1, 'State is required'),
+      postalCode: z.string().min(1, 'Postal code is required'),
+      country: z.string().min(1, 'Country is required'),
+    })
+    .optional(),
 });
 
 export const resetPasswordSchema = z.object({

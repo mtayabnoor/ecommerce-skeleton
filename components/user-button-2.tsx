@@ -2,7 +2,7 @@ import { Button } from './ui/button';
 import Link from 'next/link';
 import { Separator } from './ui/separator';
 import { UserIcon } from 'lucide-react';
-import { signOutAction } from '@/lib/server-actions/actions/user.actions';
+import { signOutAction } from '@/lib/server-actions/actions/user';
 import { auth } from '@/lib/auth';
 
 async function UserLink() {
