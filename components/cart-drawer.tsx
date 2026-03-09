@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { formatCurrency } from '@/lib/utils';
 
-export function CartSidebar() {
+function CartDrawer() {
   const { cartItems, updateQuantity, removeItem, totalAmount } = useCart();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +25,7 @@ export function CartSidebar() {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <div className="relative cursor-pointer">
+        <div className="relative cursor-pointer pl-2">
           {cartItems.length > 0 && (
             <Badge className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2">
               {cartItems.length}
@@ -128,3 +128,5 @@ export function CartSidebar() {
     </Sheet>
   );
 }
+
+export { CartDrawer };
