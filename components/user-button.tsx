@@ -74,7 +74,7 @@ function UserButton() {
             onClick={async () => {
               await authClient.signOut();
               const params = new URLSearchParams();
-              params.set('callback', pathname);
+              params.set('callbackUrl', pathname);
               router.push(`/auth/signin?${params.toString()}`);
               router.refresh();
             }}

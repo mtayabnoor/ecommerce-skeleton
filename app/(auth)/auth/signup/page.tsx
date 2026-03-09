@@ -11,13 +11,18 @@ export const metadata: Metadata = {
   title: 'Sign Up',
 };
 
-export default async function SignUpPage(props: {
-  searchParams: Promise<{ callback?: string }>;
-}) {
-  const { callback } = await props.searchParams;
+interface signInProps {
+  searchParams: Promise<{
+    callbackUrl: string;
+  }>;
+}
+
+export default async function SignUpPage({ searchParams }: signInProps) {
+  const { callbackUrl } = await searchParams;
+
   const session = await auth.api.getSession({ headers: await headers() });
   if (session) {
-    redirect(callback || '/');
+    redirect(callbackUrl || '/');
   }
 
   return (
@@ -30,7 +35,7 @@ export default async function SignUpPage(props: {
           <CardTitle>Sign in or register</CardTitle>
         </CardHeader>
         <CardContent>
-          <SignUpForm callback={callback} />
+          <SignUpForm callbackUrl={callbackUrl} />
         </CardContent>
       </Card>
     </div>

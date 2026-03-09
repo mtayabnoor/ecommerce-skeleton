@@ -9,12 +9,12 @@ import { useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { signUpSchema } from '@/lib/validators';
 
-function SignUpForm({ callback }: { callback?: string }) {
+function SignUpForm({ callbackUrl }: { callbackUrl?: string }) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const router = useRouter();
 
-  const callbackUrl = callback || '/';
+  const finalCallbackUrl = callbackUrl || '/';
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -40,7 +40,6 @@ function SignUpForm({ callback }: { callback?: string }) {
           firstName: result.data.firstName,
           lastName: result.data.lastName,
           role: 'USER',
-          callbackURL: callbackUrl,
         },
         {
           onRequest: () => {
@@ -50,7 +49,7 @@ function SignUpForm({ callback }: { callback?: string }) {
             setLoading(false);
           },
           onSuccess: async () => {
-            router.push(callbackUrl);
+            router.push(finalCallbackUrl);
             router.refresh();
           },
           onError: (ctx) => {},
@@ -67,7 +66,7 @@ function SignUpForm({ callback }: { callback?: string }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input type="hidden" name="callbackUrl" value={callbackUrl} />
+      <input type="hidden" name="callbackUrl" value={finalCallbackUrl} />
       <div className="grid gap-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="grid gap-2">

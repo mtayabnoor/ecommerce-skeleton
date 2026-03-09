@@ -9,12 +9,12 @@ import { authClient } from '@/lib/auth-client';
 import { useState } from 'react';
 import { signInSchema } from '@/lib/validators';
 
-function SignInForm({ callback }: { callback?: string }) {
+function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const router = useRouter();
 
-  const callbackUrl = callback || '/';
+  const finalCallbackUrl = callbackUrl || '/';
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -45,7 +45,7 @@ function SignInForm({ callback }: { callback?: string }) {
             setLoading(false);
           },
           onSuccess: async () => {
-            router.push(callbackUrl);
+            router.push(finalCallbackUrl);
             router.refresh();
           },
           onError: (ctx) => {},
@@ -62,7 +62,7 @@ function SignInForm({ callback }: { callback?: string }) {
   }
   return (
     <form onSubmit={handleSubmit}>
-      <input type="hidden" name="callbackUrl" value={callbackUrl} />
+      <input type="hidden" name="callbackUrlUrl" value={finalCallbackUrl} />
       <div className="grid gap-4">
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
