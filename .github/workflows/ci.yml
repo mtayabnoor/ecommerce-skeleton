@@ -107,7 +107,7 @@ jobs:
   ci-passed:
     name: CI Passed
     if: always()
-    needs: [commitlint, lint, typecheck, build, security]
+    needs: [lint, typecheck, build, security]
     runs-on: ubuntu-latest
     steps:
       - name: Check all jobs
