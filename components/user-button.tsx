@@ -43,7 +43,7 @@ function UserButton() {
           <p>{name?.charAt(0).toUpperCase()}</p>
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className="w-56 cursor-pointer">
         <DropdownMenuArrow className="fill-foreground" />
         <DropdownMenuLabel>
           <div className="flex flex-col">
@@ -52,13 +52,13 @@ function UserButton() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/profile">Profile</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/orders">Orders</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/help">Help &amp; FAQ</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
