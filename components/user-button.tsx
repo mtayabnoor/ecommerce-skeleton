@@ -8,6 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuArrow,
+  DropdownMenuGroup,
 } from './ui/dropdown-menu';
 import { Button } from './ui/button';
 import { UserIcon } from 'lucide-react';
@@ -45,37 +46,42 @@ function UserButton() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 cursor-pointer">
         <DropdownMenuArrow className="fill-foreground" />
-        <DropdownMenuLabel>
-          <div className="flex flex-col">
-            <p className="text-sm font-bold">{name}</p>
-            <p className="text-xs text-muted-foreground">{email}</p>
-          </div>
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>
+            <div className="flex flex-col">
+              <p className="text-sm font-bold">{name}</p>
+              <p className="text-xs text-muted-foreground">{email}</p>
+            </div>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href="/profile">Profile</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href="/orders">Orders</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href="/help">Help &amp; FAQ</Link>
-        </DropdownMenuItem>
+        <DropdownMenuGroup>
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/profile">Profile</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/orders">Orders</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/help">Help &amp; FAQ</Link>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
-
-        <Button
-          variant="default"
-          className="cursor-pointer w-full"
-          onClick={async () => {
-            await authClient.signOut();
-            const params = new URLSearchParams();
-            params.set('callback', pathname);
-            router.push(`/auth/signin?${params.toString()}`);
-            router.refresh();
-          }}
-        >
-          Sign Out
-        </Button>
+        <DropdownMenuGroup>
+          <Button
+            variant="default"
+            className="cursor-pointer w-full"
+            onClick={async () => {
+              await authClient.signOut();
+              const params = new URLSearchParams();
+              params.set('callback', pathname);
+              router.push(`/auth/signin?${params.toString()}`);
+              router.refresh();
+            }}
+          >
+            Sign Out
+          </Button>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
