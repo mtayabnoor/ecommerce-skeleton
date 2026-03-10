@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# E-Commerce Skeleton
 
-## Getting Started
+A modern, full-stack e-commerce skeleton built with the bleeding edge of the React ecosystem. This project provides a robust foundation for building scalable, high-performance online stores with seamless user experiences and secure backend integrations.
 
-First, run the development server:
+## 🚀 Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Core
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **State Management:** [Zustand](https://github.com/pmndrs/zustand)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### UI & Styling
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
+- **Components:** [shadcn/ui](https://ui.shadcn.com/) (built on [Radix UI](https://www.radix-ui.com/))
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **Theming:** `next-themes` for Dark/Light mode support
+- **Alerts/Toasts:** [Sonner](https://sonner.emilkowal.ski/)
+- **Carousels:** [Embla Carousel](https://www.embla-carousel.com/)
 
-## Learn Moree
+### Backend & Database
 
-To learn more about Next.js, take a look at the following resources:
+- **ORM:** [Prisma](https://www.prisma.io/)
+- **Database:** PostgreSQL (Optimized for [Neon Serverless](https://neon.tech/))
+- **Authentication:** [Better Auth](https://better-auth.com/) with `bcrypt` / `argon2`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Utilities
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Validation:** [Zod](https://zod.dev/)
+- **Money Handling:** `currency.js`
+- **Cookies:** `js-cookie`
 
-## Deploy on Vercel
+## 📦 Getting Started
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Prerequisites
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Node.js (v18 or higher recommended)
+- PostgreSQL database
+
+### Installation
+
+1. Clone the repository and install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Set up your environment variables:
+   Create a `.env` file in the root directory and configure your database and authentication secrets.
+
+3. Run Prisma migrations / generate the client:
+
+   ```bash
+   npx prisma generate
+   # Run migrations depending on your DB setup
+   # npx prisma db push  OR  npx prisma migrate dev
+   ```
+
+4. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## 🛠️ Scripts
+
+- `npm run dev`: Starts the development server.
+- `npm run build`: Builds the app for production.
+- `npm run start`: Runs the built app in production mode.
+- `npm run lint`: Lints the codebase using ESLint.
+- `npm run type-check`: Checks for TypeScript errors.
+- `npm run format`: Formats code using Prettier.
+- `npm run prisma:studio`: Opens Prisma Studio to view and edit database records.
+
+## 🔒 Authentication Flow
+
+The skeleton uses **Better Auth** to provide secure, robust user sessions. It handles standard email/password authentication (hashed via bcrypt/argon2) and links gracefully with the Prisma database schema for storing user profiles, payment methods, and addresses.
+
+## 🛒 Cart & State Management
+
+Global application state, particularly the shopping cart and user sessions, is managed via **Zustand**. It provides a lightweight, fast, and scalable alternative to React Context for inter-component state synchronisation.
+
+## 🎨 Styling Convention
+
+- **Tailwind CSS v4** is used for utility-first styling.
+- Extensively uses **shadcn/ui** for accessible, unstyled, and customizable foundational components (accessible via `components/ui`).
