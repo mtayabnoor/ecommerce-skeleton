@@ -9,7 +9,7 @@ import {
   updateCartItem,
   removeFromCart,
   mergeGuestCart,
-} from '@/lib/server-actions/actions/cart';
+} from '@/lib/server/actions/cart';
 import { CartItem } from '@/types';
 
 interface CartState {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionCookie } from 'better-auth/cookies';
 
-const protectedRoutes = ['/profile', '/orders', '/help'];
+const protectedRoutes = ['/profile', '/admin/dashboard', '/orders', '/help'];
 
 export default function proxy(req: NextRequest) {
   // 1. Read the Better Auth cookie

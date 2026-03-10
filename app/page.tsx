@@ -1,7 +1,4 @@
-import {
-  getFeaturedProducts,
-  getNewProducts,
-} from '@/lib/server-actions/queries/product';
+import { getFeaturedProducts, getNewProducts } from '@/lib/server/queries/product';
 import { Metadata } from 'next';
 import { ProductCarousel } from '@/components/product-carousel';
 import { Button } from '@/components/ui/button';

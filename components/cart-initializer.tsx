@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useCart } from '@/lib/store/cart';
-import { getCart, mergeGuestCart } from '@/lib/server-actions/actions/cart';
+import { getCart, mergeGuestCart } from '@/lib/server/actions/cart';
 import { CartItem } from '@/types';
 import { authClient } from '@/lib/auth-client';
 

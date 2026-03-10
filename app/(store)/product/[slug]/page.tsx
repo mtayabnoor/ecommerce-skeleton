@@ -4,10 +4,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, Heart, Share2, Truck, Shield, RotateCcw } from 'lucide-react';
-import {
-  getProductBySlug,
-  getRelatedProducts,
-} from '@/lib/server-actions/queries/product';
+import { getProductBySlug, getRelatedProducts } from '@/lib/server/queries/product';
 import { AddToCart } from '@/components/add-to-cart';
 import { ProductCard } from '@/components/product-card';
 import { Badge } from '@/components/ui/badge';
