@@ -52,8 +52,13 @@ function UserButton() {
             </div>
           </DropdownMenuLabel>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
         <DropdownMenuGroup>
+          {session.user.role === 'ADMIN' && (
+            <DropdownMenuItem asChild className="cursor-pointer">
+              <Link href="/admin/dashboard">Admin Dashboard</Link>
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator />
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link href="/profile">Profile</Link>
           </DropdownMenuItem>
