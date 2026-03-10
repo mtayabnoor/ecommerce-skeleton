@@ -29,7 +29,6 @@ A modern, full-stack e-commerce skeleton built with the bleeding edge of the Rea
 
 - **Validation:** [Zod](https://zod.dev/)
 - **Money Handling:** `currency.js`
-- **Cookies:** `js-cookie`
 
 ## 📦 Getting Started
 
