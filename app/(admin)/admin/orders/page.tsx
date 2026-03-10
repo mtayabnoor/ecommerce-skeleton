@@ -104,7 +104,7 @@ export default async function AdminOrdersPage(props: AdminOrdersPageProps) {
       {/* Orders Table */}
       <div className="rounded-md border bg-card">
         <Suspense
-          key={searchParams.page || '1'}
+          key={searchParams.page}
           fallback={
             <div className="p-8 text-center">
               <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
