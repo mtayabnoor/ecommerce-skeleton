@@ -86,3 +86,16 @@ Global application state, particularly the shopping cart and user sessions, is m
 
 - **Tailwind CSS v4** is used for utility-first styling.
 - Extensively uses **shadcn/ui** for accessible, unstyled, and customizable foundational components (accessible via `components/ui`).
+
+## 🚀 Deployment
+
+The easiest way to deploy this Next.js 16 application is to use the [Vercel Platform](https://vercel.com/new).
+
+### Steps to Deploy on Vercel:
+
+1. Push your code to a GitHub, GitLab, or Bitbucket repository.
+2. Import your project into Vercel.
+3. Configure the **Environment Variables** in the Vercel project settings to match your `.env` file (e.g., database connection string, auth secret, etc.).
+4. Click **Deploy**. Vercel will automatically detect that it's a Next.js project and configure the build settings accordingly.
+
+Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
