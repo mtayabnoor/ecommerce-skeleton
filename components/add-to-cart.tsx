@@ -68,7 +68,7 @@ function AddToCart({
 
   if (showQuantitySelector) {
     return (
-      <div className="space-y-4">
+      <div className="flex flex-col space-y-4">
         <div className="space-y-2">
           <Label htmlFor="quantity">Quantity</Label>
           <div className="flex items-center space-x-2">

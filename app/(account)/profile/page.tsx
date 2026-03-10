@@ -11,28 +11,22 @@ export default async function ProfilePage() {
     return redirect('/auth/signin?callbackUrl=/profile');
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-  });
-
-  if (!user) {
-    return redirect('/auth/signin?callbackUrl=/profile');
-  }
-
   const userData = {
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    paymentMethod: user.paymentMethod,
-    address: user.address as {
-      line1?: string;
-      line2?: string;
-      city?: string;
-      state?: string;
-      postalCode?: string;
-      country?: string;
-    } | null,
+    id: session.user.id,
+    firstName: session.user.firstName,
+    lastName: session.user.lastName,
+    email: session.user.email,
+    paymentMethod: session.user.paymentMethod,
+    address: session.user.address as
+      | {
+          line1?: string;
+          line2?: string;
+          city?: string;
+          state?: string;
+          postalCode?: string;
+          country?: string;
+        }
+      | undefined,
   };
 
   return (

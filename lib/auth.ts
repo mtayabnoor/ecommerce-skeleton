@@ -63,9 +63,11 @@ export const auth = betterAuth({
   },
   user: {
     additionalFields: {
-      firstName: { type: 'string', required: false },
-      lastName: { type: 'string', required: false },
-      role: { type: 'string', required: false },
+      firstName: { type: 'string', required: true },
+      lastName: { type: 'string', required: true },
+      role: { type: 'string', required: true },
+      address: { type: 'json', required: false },
+      paymentMethod: { type: 'string', required: false },
     },
   },
 });

@@ -1,7 +1,6 @@
 'use client';
 
 import { useActionState } from 'react';
-import { updateUserAction } from '@/lib/server-actions/actions/user';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -16,28 +15,40 @@ import {
 } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
+import { authClient } from '@/lib/auth-client';
+import { updateProfileSchema } from '@/lib/validators';
+import { useRouter } from 'next/navigation';
 
 type UserData = {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
-  paymentMethod: string | null;
-  address: {
-    line1?: string;
-    line2?: string;
-    city?: string;
-    state?: string;
-    postalCode?: string;
-    country?: string;
-  } | null;
+  paymentMethod?: string | null;
+  address:
+    | {
+        line1?: string;
+        line2?: string;
+        city?: string;
+        state?: string;
+        postalCode?: string;
+        country?: string;
+      }
+    | undefined;
+};
+
+export type FormState = {
+  success: boolean;
+  message?: string;
+  fields?: Record<string, string[] | undefined>;
 };
 
 export function ProfileForm({ user }: { user: UserData }) {
-  const [state, formAction, isPending] = useActionState(updateUserAction, {
+  const router = useRouter();
+  const [state, formAction, isPending] = useActionState(updateUserHandle, {
     success: false,
     message: '',
-    fields: {},
+    fields: undefined,
   });
 
   useEffect(() => {
@@ -50,6 +61,89 @@ export function ProfileForm({ user }: { user: UserData }) {
     }
   }, [state]);
 
+  async function updateUserHandle(
+    previousState: unknown,
+    formData: FormData,
+  ): Promise<FormState> {
+    const rawData = Object.fromEntries(formData.entries());
+
+    const hasAddress = !!(
+      rawData.line1 ||
+      rawData.line2 ||
+      rawData.city ||
+      rawData.state ||
+      rawData.postalCode ||
+      rawData.country
+    );
+
+    const result = updateProfileSchema.safeParse({
+      firstName: rawData.firstName,
+      lastName: rawData.lastName,
+      email: rawData.email,
+      paymentMethod: rawData.paymentMethod,
+      address: hasAddress
+        ? {
+            line1: rawData.line1,
+            line2: rawData.line2,
+            city: rawData.city,
+            state: rawData.state,
+            postalCode: rawData.postalCode,
+            country: rawData.country,
+          }
+        : undefined,
+    });
+
+    if (!result.success) {
+      const fieldErrors: Record<string, string[]> = {};
+
+      result.error.issues.forEach((issue) => {
+        const key = issue.path.join('.');
+
+        if (!fieldErrors[key]) {
+          fieldErrors[key] = [];
+        }
+        fieldErrors[key].push(issue.message);
+      });
+
+      return {
+        success: false,
+        message: 'Invalid form data',
+        fields: fieldErrors,
+      };
+    }
+
+    try {
+      const { error } = await authClient.updateUser({
+        firstName: result.data.firstName,
+        lastName: result.data.lastName,
+        name: `${result.data.firstName} ${result.data.lastName}`,
+        address: result.data.address,
+        paymentMethod: result.data.paymentMethod,
+      });
+
+      if (error) {
+        return {
+          success: false,
+          message: error.message,
+          fields: {},
+        };
+      }
+
+      await authClient.updateSession();
+      return {
+        success: true,
+        message: 'Profile updated successfully',
+        fields: {},
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to update profile',
+        fields: {},
+      };
+    }
+  }
+
   return (
     <div className="w-full max-w-3xl mx-auto py-8">
       <h1 className="text-3xl font-bold mb-8">My Profile</h1>
@@ -61,7 +155,11 @@ export function ProfileForm({ user }: { user: UserData }) {
         </TabsList>
 
         <form action={formAction}>
-          <TabsContent value="general">
+          <TabsContent
+            value="general"
+            forceMount
+            className="data-[state=inactive]:hidden"
+          >
             <Card>
               <CardHeader>
                 <CardTitle>General Information</CardTitle>
@@ -134,7 +232,11 @@ export function ProfileForm({ user }: { user: UserData }) {
             </Card>
           </TabsContent>
 
-          <TabsContent value="address">
+          <TabsContent
+            value="address"
+            forceMount
+            className="data-[state=inactive]:hidden"
+          >
             <Card>
               <CardHeader>
                 <CardTitle>Shipping Address</CardTitle>

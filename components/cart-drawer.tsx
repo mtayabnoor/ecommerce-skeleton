@@ -156,7 +156,7 @@ function CartDrawer() {
             </div>
 
             <Button
-              className="w-full text-base h-14 rounded-full shadow-lg"
+              className="w-full text-base h-14 shadow-lg"
               asChild
               onClick={() => setIsOpen(false)}
             >

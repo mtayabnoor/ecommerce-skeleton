@@ -223,12 +223,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 )}
               </div>
 
-              <div className="flex space-x-2">
-                <AddToCart item={product} showQuantitySelector={true} />
-                <Button variant="outline" size="sm">
-                  <Heart className="mr-2 h-4 w-4" />
-                  Add to Wishlist
-                </Button>
+              <div className="flex">
+                <div>
+                  <AddToCart item={product} showQuantitySelector={true} />
+                </div>
+                <div className="flex flex-col items-end justify-end">
+                  <Button variant="outline" className="ml-2">
+                    <Heart className=" " />
+                  </Button>
+                </div>
               </div>
             </div>
 
