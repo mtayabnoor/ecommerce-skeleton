@@ -1,31 +1,24 @@
 // File: app/admin/orders/page.tsx
 import { Suspense } from 'react';
-import { Search, Filter, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { getOrders } from '@/lib/server/queries/orders';
 import { OrdersDataTable } from '@/components/orders-data-table';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-
-export const dynamic = 'force-dynamic';
+import { OrdersFilters } from './orders-filters';
 import { formatPrice } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 interface AdminOrdersPageProps {
-  searchParams: {
+  searchParams: Promise<{
     search?: string;
     status?: string;
     dateFrom?: string;
     dateTo?: string;
     page?: string;
-  };
+    limit?: string;
+  }>;
 }
 
 async function OrdersList({
@@ -33,15 +26,19 @@ async function OrdersList({
 }: {
   searchParams: AdminOrdersPageProps['searchParams'];
 }) {
-  const page = parseInt(searchParams.page || '1');
-  const search = searchParams.search || '';
-  const status = searchParams.status === 'all' ? '' : searchParams.status || '';
-  const dateFrom = searchParams.dateFrom ? new Date(searchParams.dateFrom) : undefined;
-  const dateTo = searchParams.dateTo ? new Date(searchParams.dateTo) : undefined;
+  const resolvedParams = await searchParams;
+  const page = parseInt(resolvedParams.page || '1');
+  const limit = parseInt(resolvedParams.limit || '20');
+  const search = resolvedParams.search || '';
+  const status = resolvedParams.status === 'all' ? '' : resolvedParams.status || '';
+  const dateFrom = resolvedParams.dateFrom
+    ? new Date(resolvedParams.dateFrom)
+    : undefined;
+  const dateTo = resolvedParams.dateTo ? new Date(resolvedParams.dateTo) : undefined;
 
   const result = await getOrders({
     page,
-    limit: 20,
+    limit,
     search,
     status,
     dateFrom,
@@ -52,15 +49,16 @@ async function OrdersList({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          Showing {(page - 1) * 20 + 1}-{Math.min(page * 20, result.pagination.total)} of{' '}
-          {result.pagination.total} orders
+          Showing {(page - 1) * limit + 1}-
+          {Math.min(page * limit, result.pagination.total)} of {result.pagination.total}{' '}
+          orders
         </p>
         <div className="flex items-center space-x-2">
           <Badge variant="outline">{result.pagination.total} total</Badge>
-          <Badge className="bg-yellow-100 text-yellow-800">
+          <Badge className="bg-amber-500/20 text-amber-600 dark:text-amber-400">
             {result.orders.filter((o) => o.status === 'PENDING').length} pending
           </Badge>
-          <Badge className="bg-blue-100 text-blue-800">
+          <Badge className="bg-blue-500/20 text-blue-600 dark:text-blue-400">
             {result.orders.filter((o) => o.status === 'PROCESSING').length} processing
           </Badge>
         </div>
@@ -76,12 +74,16 @@ async function OrdersList({
           date: new Date(order.createdAt).toLocaleDateString(),
         }))}
         isLoading={false}
+        currentPage={page}
+        pageCount={result.pagination.pages}
+        limit={limit}
       />
     </div>
   );
 }
 
-export default function AdminOrdersPage({ searchParams }: AdminOrdersPageProps) {
+export default async function AdminOrdersPage(props: AdminOrdersPageProps) {
+  const searchParams = await props.searchParams;
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -97,57 +99,28 @@ export default function AdminOrdersPage({ searchParams }: AdminOrdersPageProps) 
       </div>
 
       {/* Filters */}
-      <div className="flex items-center space-x-4">
-        <div className="relative max-w-sm flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search orders..."
-            defaultValue={searchParams.search}
-            className="pl-9"
-          />
-        </div>
-
-        <Select defaultValue={searchParams.status || 'all'}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="All Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="PENDING">Pending</SelectItem>
-            <SelectItem value="PROCESSING">Processing</SelectItem>
-            <SelectItem value="SHIPPED">Shipped</SelectItem>
-            <SelectItem value="DELIVERED">Delivered</SelectItem>
-            <SelectItem value="CANCELLED">Cancelled</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <DatePickerWithRange />
-
-        <Button variant="outline" size="sm">
-          <Filter className="mr-2 h-4 w-4" />
-          More Filters
-        </Button>
-      </div>
+      <OrdersFilters />
 
       {/* Orders Table */}
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border bg-card">
         <Suspense
+          key={searchParams.page || '1'}
           fallback={
             <div className="p-8 text-center">
-              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
               <p className="mt-2 text-sm text-muted-foreground">Loading orders...</p>
             </div>
           }
         >
-          <OrdersList searchParams={searchParams} />
+          <OrdersList searchParams={props.searchParams} />
         </Suspense>
       </div>
 
       {/* Quick Stats */}
       <div className="grid gap-4 md:grid-cols-5">
-        <div className="rounded-lg border bg-white p-6">
+        <div className="rounded-lg border bg-card text-card-foreground p-6">
           <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-blue-500" />
+            <div className="mr-3 h-8 w-2 rounded bg-primary" />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Total Orders</p>
               <p className="text-2xl font-bold">2,847</p>
@@ -155,9 +128,9 @@ export default function AdminOrdersPage({ searchParams }: AdminOrdersPageProps) 
           </div>
         </div>
 
-        <div className="rounded-lg border bg-white p-6">
+        <div className="rounded-lg border bg-card text-card-foreground p-6">
           <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-yellow-500" />
+            <div className="mr-3 h-8 w-2 rounded bg-amber-500" />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Pending</p>
               <p className="text-2xl font-bold">42</p>
@@ -165,7 +138,7 @@ export default function AdminOrdersPage({ searchParams }: AdminOrdersPageProps) 
           </div>
         </div>
 
-        <div className="rounded-lg border bg-white p-6">
+        <div className="rounded-lg border bg-card text-card-foreground p-6">
           <div className="flex items-center">
             <div className="mr-3 h-8 w-2 rounded bg-purple-500" />
             <div>
@@ -175,9 +148,9 @@ export default function AdminOrdersPage({ searchParams }: AdminOrdersPageProps) 
           </div>
         </div>
 
-        <div className="rounded-lg border bg-white p-6">
+        <div className="rounded-lg border bg-card text-card-foreground p-6">
           <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-green-500" />
+            <div className="mr-3 h-8 w-2 rounded bg-emerald-500" />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Completed</p>
               <p className="text-2xl font-bold">2,651</p>
@@ -185,9 +158,9 @@ export default function AdminOrdersPage({ searchParams }: AdminOrdersPageProps) 
           </div>
         </div>
 
-        <div className="rounded-lg border bg-white p-6">
+        <div className="rounded-lg border bg-card text-card-foreground p-6">
           <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-gray-500" />
+            <div className="mr-3 h-8 w-2 rounded bg-muted-foreground" />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Revenue</p>
               <p className="text-2xl font-bold">{formatPrice(284750)}</p>

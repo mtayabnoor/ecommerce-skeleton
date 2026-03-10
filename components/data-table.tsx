@@ -1,6 +1,7 @@
 // Location: components/data-table.tsx
 
 'use client';
+'use no memo';
 
 import * as React from 'react';
 import {
@@ -25,7 +26,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ChevronDown, Search, Filter, Download, RefreshCw } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ChevronDown, Search, Filter, Download, RefreshCw, ArchiveX } from 'lucide-react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -36,6 +44,12 @@ interface DataTableProps<TData, TValue> {
   onExport?: () => void;
   isLoading?: boolean;
   toolbar?: React.ReactNode;
+  pageCount?: number;
+  pagination?: {
+    pageIndex: number;
+    pageSize: number;
+  };
+  onPaginationChange?: (updater: any) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -47,11 +61,17 @@ export function DataTable<TData, TValue>({
   onExport,
   isLoading = false,
   toolbar,
+  pageCount,
+  pagination,
+  onPaginationChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  // Decide whether pagination is controlled externally or internally
+  const isManualPagination = pageCount !== undefined && pagination !== undefined;
 
   const table = useReactTable({
     data,
@@ -64,11 +84,18 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    // Add conditional pagination overrides
+    ...(isManualPagination && {
+      manualPagination: true,
+      pageCount,
+      onPaginationChange,
+    }),
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      ...(isManualPagination && { pagination }),
     },
   });
 
@@ -80,14 +107,14 @@ export function DataTable<TData, TValue>({
           <div className="flex items-center space-x-2">
             {searchKey && (
               <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder={searchPlaceholder}
                   value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
                   onChange={(event) =>
                     table.getColumn(searchKey)?.setFilterValue(event.target.value)
                   }
-                  className="max-w-sm pl-8"
+                  className="max-w-sm w-[250px] pl-9"
                 />
               </div>
             )}
@@ -118,13 +145,16 @@ export function DataTable<TData, TValue>({
         </div>
 
         {/* Table */}
-        <div className="rounded-md border">
+        <div className="rounded-md border bg-card text-card-foreground">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-muted/50 border-b">
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
+                <TableRow key={headerGroup.id} className="hover:bg-transparent">
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className="h-10 text-xs font-semibold tracking-wider text-muted-foreground/80 uppercase"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
@@ -140,16 +170,20 @@ export function DataTable<TData, TValue>({
                   <TableRow key={index}>
                     {columns.map((_, cellIndex) => (
                       <TableCell key={cellIndex}>
-                        <div className="h-4 animate-pulse rounded bg-muted" />
+                        <div className="h-5 w-full animate-pulse rounded bg-muted/60" />
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                    className="hover:bg-accent/50"
+                  >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className="py-3">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
@@ -157,10 +191,19 @@ export function DataTable<TData, TValue>({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    <div className="flex flex-col items-center justify-center space-y-2">
-                      <Filter className="h-8 w-8 text-muted-foreground" />
-                      <p className="text-muted-foreground">No results found.</p>
+                  <TableCell colSpan={columns.length} className="h-32 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted/50">
+                        <ArchiveX className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm font-medium text-foreground">
+                          No data found
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Adjust your filters to see results.
+                        </p>
+                      </div>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -170,38 +213,41 @@ export function DataTable<TData, TValue>({
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between space-x-2">
+        <div className="flex items-center justify-between px-2">
           <div className="flex-1 text-sm text-muted-foreground">
             {table.getFilteredSelectedRowModel().rows.length > 0 && (
               <>
                 {table.getFilteredSelectedRowModel().rows.length} of{' '}
-                {table.getFilteredRowModel().rows.length} row(s) selected.
+                {isManualPagination ? 'many' : table.getFilteredRowModel().rows.length}{' '}
+                row(s) selected.
               </>
             )}
           </div>
 
           <div className="flex items-center space-x-6 lg:space-x-8">
             <div className="flex items-center space-x-2">
-              <p className="text-sm font-medium">Rows per page</p>
-              <select
-                className="h-8 w-[70px] rounded border border-input bg-background px-2 text-sm"
-                value={table.getState().pagination.pageSize}
-                onChange={(e) => {
-                  table.setPageSize(Number(e.target.value));
-                }}
-                aria-label="Select rows per page"
-                title="Select number of rows to display per page"
+              <p className="text-sm font-medium text-muted-foreground">Rows per page</p>
+              <Select
+                value={`${table.getState().pagination.pageSize}`}
+                onValueChange={(value) => table.setPageSize(Number(value))}
+                disabled={isManualPagination}
               >
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <option key={pageSize} value={pageSize}>
-                    {pageSize}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="h-8 w-[70px]">
+                  <SelectValue placeholder={table.getState().pagination.pageSize} />
+                </SelectTrigger>
+                <SelectContent side="top">
+                  {[10, 20, 30, 40, 50].map((pageSize) => (
+                    <SelectItem key={pageSize} value={`${pageSize}`}>
+                      {pageSize}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+            <div className="flex w-[100px] items-center justify-center text-sm font-medium text-muted-foreground">
+              Page {table.getState().pagination.pageIndex + 1} of{' '}
+              {table.getPageCount() || 1}
             </div>
 
             <div className="flex items-center space-x-2">
@@ -210,6 +256,7 @@ export function DataTable<TData, TValue>({
                 size="sm"
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
+                className="h-8 shadow-sm"
               >
                 Previous
               </Button>
@@ -218,6 +265,7 @@ export function DataTable<TData, TValue>({
                 size="sm"
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
+                className="h-8 shadow-sm"
               >
                 Next
               </Button>
@@ -245,21 +293,23 @@ export function DataTableColumnHeader<TData, TValue>({
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
-      <button
-        className="flex items-center space-x-1 hover:text-accent-foreground"
+      <Button
+        variant="ghost"
+        size="sm"
+        className="-ml-3 h-8 data-[state=open]:bg-accent"
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
       >
         <span>{title}</span>
         <ChevronDown
-          className={`ml-2 h-4 w-4 transition-transform ${
+          className={`ml-2 h-4 w-4 transition-transform text-muted-foreground ${
             column.getIsSorted() === 'asc'
-              ? 'rotate-180'
+              ? 'rotate-180 text-foreground'
               : column.getIsSorted() === 'desc'
-                ? 'rotate-0'
+                ? 'rotate-0 text-foreground'
                 : 'opacity-50'
           }`}
         />
-      </button>
+      </Button>
     </div>
   );
 }

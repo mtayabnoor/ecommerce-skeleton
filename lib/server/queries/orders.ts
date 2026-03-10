@@ -122,8 +122,6 @@ const _getUserOrdersCached = createCachedFunction(
   60,
 );
 
-// ─── Public wrappers (resolve session OUTSIDE the cache boundary) ─────────────
-
 export async function getOrders({
   page = 1,
   limit = 20,
