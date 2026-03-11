@@ -9,8 +9,14 @@ export type CartItem = {
   stock: number;
 };
 
-export type ActionResponse = {
-  success: boolean;
-  message: string;
-  fieldErrors?: Record<string, string[]>;
-};
+export type ActionResponse<T = unknown> =
+  | {
+      success: true;
+      message: string;
+      data?: T;
+    }
+  | {
+      success: false;
+      message: string;
+      fieldErrors?: Record<string, string[]>;
+    };

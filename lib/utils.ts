@@ -67,29 +67,29 @@ export function formatZodErrors(error: ZodError) {
   };
 }
 
-export function createSafeAction<TInput, TResult>(
-  schema: ZodSchema<TInput>,
-  handler: (data: TInput) => Promise<TResult>,
+export function createServerAction<TSchema, TResult>(
+  schema: ZodSchema<TSchema>,
+  handler: (data: TSchema) => Promise<TResult>,
 ) {
   return async (
-    prevState: ActionResponse,
+    prevState: ActionResponse<TResult>,
     formData: FormData,
-  ): Promise<ActionResponse & { data?: TResult }> => {
-    const rawData = Object.fromEntries(formData);
+  ): Promise<ActionResponse<TResult>> => {
+    const raw = Object.fromEntries(formData);
 
-    const result = schema.safeParse(rawData);
+    const parsed = schema.safeParse(raw);
 
-    if (!result.success) {
-      return formatZodErrors(result.error);
+    if (!parsed.success) {
+      return formatZodErrors(parsed.error);
     }
 
     try {
-      const data = await handler(result.data);
+      const result = await handler(parsed.data);
 
       return {
         success: true,
         message: 'Success',
-        data,
+        data: result,
       };
     } catch (error) {
       return {

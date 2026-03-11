@@ -7,37 +7,70 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { signUpSchema } from '@/lib/validators';
-import { useZodForm } from '@/hooks/use-zod-form';
+import { formatZodErrors } from '@/lib/utils';
+import { ActionResponse } from '@/types';
+import { useState } from 'react';
 
 function SignUpForm({ callbackUrl }: { callbackUrl?: string }) {
+  const [errors, setErrors] = useState<ActionResponse | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const finalCallbackUrl = callbackUrl || '/';
 
-  const { handleSubmit, loading, errors } = useZodForm(signUpSchema, async (data) => {
-    const { error } = await authClient.signUp.email({
-      name: `${data.firstName} ${data.lastName}`,
-      email: data.email,
-      password: data.password,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      role: 'USER',
-    });
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-    if (error) {
-      return {
-        success: false,
-        message: error.message || 'Sign up failed',
-      };
+    setErrors(null);
+
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData);
+
+    const result = signUpSchema.safeParse(data);
+
+    if (!result.success) {
+      const formatted = formatZodErrors(result.error);
+      setErrors(formatted);
+      return;
     }
 
-    router.push(finalCallbackUrl);
-    router.refresh();
-
-    return {
-      success: true,
-      message: 'Success',
-    };
-  });
+    try {
+      await authClient.signUp.email(
+        {
+          name: `${result.data.firstName} ${result.data.lastName}`,
+          email: result.data.email,
+          password: result.data.password,
+          firstName: result.data.firstName,
+          lastName: result.data.lastName,
+          role: 'USER',
+        },
+        {
+          onRequest: () => {
+            setLoading(true);
+          },
+          onResponse: () => {
+            setLoading(false);
+          },
+          onSuccess: async () => {
+            router.push(finalCallbackUrl);
+            router.refresh();
+          },
+          onError: (ctx) => {
+            setErrors({
+              success: false,
+              message: ctx.error.message,
+            });
+          },
+        },
+      );
+    } catch (error) {
+      setErrors({
+        success: false,
+        message: 'An unexpected error occurred',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -47,7 +80,7 @@ function SignUpForm({ callbackUrl }: { callbackUrl?: string }) {
           <div className="grid gap-2">
             <Label htmlFor="firstName">First Name</Label>
             <Input id="firstName" name="firstName" type="text" required />
-            {errors?.fieldErrors?.firstName && (
+            {!errors?.success && errors?.fieldErrors?.firstName && (
               <p className="text-xs text-destructive">
                 {errors.fieldErrors.firstName[0]}
               </p>
@@ -56,7 +89,7 @@ function SignUpForm({ callbackUrl }: { callbackUrl?: string }) {
           <div className="grid gap-2">
             <Label htmlFor="lastName">Last Name</Label>
             <Input id="lastName" name="lastName" type="text" required />
-            {errors?.fieldErrors?.lastName && (
+            {!errors?.success && errors?.fieldErrors?.lastName && (
               <p className="text-xs text-destructive">{errors.fieldErrors.lastName[0]}</p>
             )}
           </div>
@@ -64,21 +97,21 @@ function SignUpForm({ callbackUrl }: { callbackUrl?: string }) {
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
           <Input id="email" name="email" type="email" required />
-          {errors?.fieldErrors?.email && (
+          {!errors?.success && errors?.fieldErrors?.email && (
             <p className="text-xs text-destructive">{errors.fieldErrors.email[0]}</p>
           )}
         </div>
         <div className="grid gap-2">
           <Label htmlFor="password">Password</Label>
           <Input id="password" name="password" type="password" required />
-          {errors?.fieldErrors?.password && (
+          {!errors?.success && errors?.fieldErrors?.password && (
             <p className="text-xs text-destructive">{errors.fieldErrors.password[0]}</p>
           )}
         </div>
         <div className="grid gap-2">
           <Label htmlFor="confirmPassword">Confirm Password</Label>
           <Input id="confirmPassword" name="confirmPassword" type="password" required />
-          {errors?.fieldErrors?.confirmPassword && (
+          {!errors?.success && errors?.fieldErrors?.confirmPassword && (
             <p className="text-xs text-destructive">
               {errors.fieldErrors.confirmPassword[0]}
             </p>

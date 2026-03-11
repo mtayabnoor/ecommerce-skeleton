@@ -8,12 +8,13 @@ import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { useState } from 'react';
 import { signInSchema } from '@/lib/validators';
+import { formatZodErrors } from '@/lib/utils';
+import { ActionResponse } from '@/types';
 
 function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
+  const [errors, setErrors] = useState<ActionResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string[]>>({});
   const router = useRouter();
-
   const finalCallbackUrl = callbackUrl || '/';
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
@@ -25,14 +26,13 @@ function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
     const result = signInSchema.safeParse(rawData);
 
     if (!result.success) {
-      setErrors(result.error.flatten().fieldErrors);
+      const formatted = formatZodErrors(result.error);
+      setErrors(formatted);
       return;
     }
 
-    setErrors({});
-
     try {
-      const { error } = await authClient.signIn.email(
+      await authClient.signIn.email(
         {
           email: result.data.email,
           password: result.data.password,
@@ -48,14 +48,19 @@ function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
             router.push(finalCallbackUrl);
             router.refresh();
           },
-          onError: (ctx) => {},
+          onError: (ctx) => {
+            setErrors({
+              success: false,
+              message: ctx.error.message,
+            });
+          },
         },
       );
-
-      if (error) {
-        setErrors({ form: [error.message || 'Sign in failed'] });
-        return;
-      }
+    } catch (error) {
+      setErrors({
+        success: false,
+        message: 'An unexpected error occurred',
+      });
     } finally {
       setLoading(false);
     }
@@ -67,13 +72,15 @@ function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
           <Input id="email" name="email" type="email" required />
-          {errors?.email && <p className="text-xs text-destructive">{errors.email[0]}</p>}
+          {!errors?.success && errors?.fieldErrors?.email && (
+            <p className="text-xs text-destructive">{errors?.fieldErrors?.email[0]}</p>
+          )}
         </div>
         <div className="grid gap-2">
           <Label htmlFor="password">Password</Label>
           <Input id="password" name="password" type="password" required />
-          {errors?.password && (
-            <p className="text-xs text-destructive">{errors.password[0]}</p>
+          {!errors?.success && errors?.fieldErrors?.password && (
+            <p className="text-xs text-destructive">{errors?.fieldErrors?.password[0]}</p>
           )}
         </div>
 
@@ -85,8 +92,8 @@ function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
         >
           Sign In
         </Button>
-        {errors?.form && (
-          <p className="text-xs text-destructive text-center">{errors.form[0]}</p>
+        {!errors?.success && errors?.message && (
+          <p className="text-xs text-destructive text-center">{errors.message}</p>
         )}
       </div>
       <div className="mt-4 text-center text-sm">
