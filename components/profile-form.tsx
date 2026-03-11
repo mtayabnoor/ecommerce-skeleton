@@ -113,13 +113,20 @@ export function ProfileForm({ user }: { user: UserData }) {
     }
 
     try {
-      const { error } = await authClient.updateUser({
-        firstName: result.data.firstName,
-        lastName: result.data.lastName,
-        name: `${result.data.firstName} ${result.data.lastName}`,
-        address: result.data.address,
-        paymentMethod: result.data.paymentMethod,
-      });
+      const { error } = await authClient.updateUser(
+        {
+          firstName: result.data.firstName,
+          lastName: result.data.lastName,
+          name: `${result.data.firstName} ${result.data.lastName}`,
+          address: result.data.address,
+          paymentMethod: result.data.paymentMethod,
+        },
+        {
+          onSuccess: async () => {
+            router.refresh();
+          },
+        },
+      );
 
       if (error) {
         return {

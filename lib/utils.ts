@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { ZodError, ZodSchema } from 'zod';
+import { ActionResponse } from '@/types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -44,3 +46,56 @@ export function formatCurrency(
 }
 
 export const formatPrice = formatCurrency;
+
+export function formatZodErrors(error: ZodError) {
+  const fieldErrors: Record<string, string[]> = {};
+
+  for (const issue of error.issues) {
+    const path = issue.path.join('.'); // handles nested objects
+
+    if (!fieldErrors[path]) {
+      fieldErrors[path] = [];
+    }
+
+    fieldErrors[path].push(issue.message);
+  }
+
+  return {
+    success: false as const,
+    message: 'Input validation failed',
+    fieldErrors,
+  };
+}
+
+export function createSafeAction<TInput, TResult>(
+  schema: ZodSchema<TInput>,
+  handler: (data: TInput) => Promise<TResult>,
+) {
+  return async (
+    prevState: ActionResponse,
+    formData: FormData,
+  ): Promise<ActionResponse & { data?: TResult }> => {
+    const rawData = Object.fromEntries(formData);
+
+    const result = schema.safeParse(rawData);
+
+    if (!result.success) {
+      return formatZodErrors(result.error);
+    }
+
+    try {
+      const data = await handler(result.data);
+
+      return {
+        success: true,
+        message: 'Success',
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Something went wrong',
+      };
+    }
+  };
+}

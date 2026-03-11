@@ -8,3 +8,9 @@ export type CartItem = {
   image: string;
   stock: number;
 };
+
+export type ActionResponse = {
+  success: boolean;
+  message: string;
+  fieldErrors?: Record<string, string[]>;
+};
