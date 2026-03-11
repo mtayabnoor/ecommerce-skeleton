@@ -78,9 +78,9 @@ export function OrdersFilters() {
         </SelectContent>
       </Select>
 
-      <div className={isPending ? 'opacity-50 pointer-events-none' : ''}>
-        <DatePickerWithRange />
-      </div>
+      {/*<div className={isPending ? 'opacity-50 pointer-events-none' : ''}>
+      //  <DatePickerWithRange />
+      //</div>*/}
 
       <Button variant="outline" size="sm" disabled={isPending}>
         <Filter className={`mr-2 h-4 w-4 ${isPending ? 'animate-pulse' : ''}`} />

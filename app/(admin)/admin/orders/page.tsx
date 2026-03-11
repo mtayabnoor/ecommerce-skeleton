@@ -47,7 +47,7 @@ async function OrdersList({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between p-2">
         <p className="text-sm text-muted-foreground">
           Showing {(page - 1) * limit + 1}-
           {Math.min(page * limit, result.pagination.total)} of {result.pagination.total}{' '}
@@ -163,7 +163,7 @@ export default async function AdminOrdersPage(props: AdminOrdersPageProps) {
             <div className="mr-3 h-8 w-2 rounded bg-muted-foreground" />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Revenue</p>
-              <p className="text-2xl font-bold">{formatPrice(284750)}</p>
+              <p className="text-2xl font-bold">{formatPrice(500)}</p>
             </div>
           </div>
         </div>

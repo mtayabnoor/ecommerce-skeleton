@@ -11,6 +11,7 @@ export const CACHE_TAGS = {
   order: `${APP_CACHE_VERSION}-order`,
   inventory: `${APP_CACHE_VERSION}-inventory`,
   user: `${APP_CACHE_VERSION}-user`,
+  users: `${APP_CACHE_VERSION}-users`,
   cart: `${APP_CACHE_VERSION}-cart`,
 } as const;
 
@@ -74,6 +75,10 @@ export const revalidateUser = (userId: string) => {
   revalidateCache(CACHE_TAGS.user);
 };
 
+export const revalidateUsers = () => {
+  revalidateCache(CACHE_TAGS.users);
+};
+
 // Cache configuration presets
 export const CACHE_CONFIGS = {
   products: {
@@ -90,6 +95,10 @@ export const CACHE_CONFIGS = {
   },
   orders: {
     tags: [CACHE_TAGS.orders],
+    revalidate: 60, // 1 minute
+  },
+  users: {
+    tags: [CACHE_TAGS.users],
     revalidate: 60, // 1 minute
   },
 } as const;

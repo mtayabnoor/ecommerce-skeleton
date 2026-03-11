@@ -120,7 +120,8 @@ export const requireRole = async (requiredRole: Role) => {
   const hasRequiredRole = await hasRole(requiredRole);
 
   if (!hasRequiredRole) {
-    redirect('/unauthorized');
+    //redirect('/unauthorized');
+    redirect('/');
   }
 
   return user;
@@ -132,7 +133,7 @@ export const requirePermission = async (permission: Permission) => {
   const hasRequiredPermission = await hasPermission(permission);
 
   if (!hasRequiredPermission) {
-    redirect('/unauthorized');
+    redirect('/');
   }
 
   return user;
