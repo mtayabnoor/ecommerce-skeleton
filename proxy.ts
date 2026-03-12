@@ -1,57 +1,56 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getSessionCookie } from 'better-auth/cookies';
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 
 const protectedRoutes = [
-  '/profile',
-  '/admin/dashboard',
-  '/admin/users',
-  '/admin/products',
-
-  '/admin/categories',
-
-  '/admin/settings',
-
-  '/admin/inventory',
-
-  '/help',
+  "/profile",
+  "/admin/dashboard",
+  "/admin/users",
+  "/admin/products",
+  "/admin/categories",
+  "/admin/settings",
+  "/admin/inventory",
+  "/help",
 ];
 
-export default function proxy(req: NextRequest) {
-  // 1. Read the Better Auth cookie
-  const sessionCookie = getSessionCookie(req);
-  const isLoggedIn = !!sessionCookie;
+export default async function proxy(req: NextRequest) {
+  // Validate the actual session instead of only checking cookie
+  const session = await auth.api.getSession({
+    headers: req.headers,
+  });
+
+  const isLoggedIn = !!session?.user;
+
+  const pathname = req.nextUrl.pathname;
 
   const isOnProtectedRoute = protectedRoutes.some((route) =>
-    req.nextUrl.pathname.startsWith(route),
+    pathname.startsWith(route)
   );
-  const isOnAuthRoute = req.nextUrl.pathname.startsWith('/auth');
 
-  // --- THE CALLBACK LOGIC ---
+  const isOnAuthRoute = pathname.startsWith("/auth");
 
-  // 2. Redirect unauthenticated users and SET the callback
+  // Redirect unauthenticated users trying to access protected routes
   if (isOnProtectedRoute && !isLoggedIn) {
-    const signInUrl = new URL('/auth/signin', req.nextUrl);
+    const signInUrl = new URL("/auth/signin", req.nextUrl);
 
-    // Grab where they were trying to go, and attach it as '?callback=/profile'
-    signInUrl.searchParams.set('callbackUrl', req.nextUrl.pathname);
+    // keep track of where they were going
+    signInUrl.searchParams.set("callbackUrl", pathname);
 
     return NextResponse.redirect(signInUrl);
   }
 
-  // 3. Redirect authenticated users and READ the callback
+  // Prevent logged in users from accessing auth pages
   if (isOnAuthRoute && isLoggedIn) {
-    // If they have a callback in the URL, send them there. Otherwise, default to /profile.
-    const callbackUrl = req.nextUrl.searchParams.get('callbackUrl') || '/profile';
+    const callbackUrl =
+      req.nextUrl.searchParams.get("callbackUrl") || "/profile";
 
     return NextResponse.redirect(new URL(callbackUrl, req.nextUrl));
   }
 
-  // 4. Let all other requests proceed normally
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$|robots.txt|sitemap.xml).*)',
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$|robots.txt|sitemap.xml).*)",
   ],
 };
