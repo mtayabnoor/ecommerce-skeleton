@@ -121,7 +121,7 @@ export const requireRole = async (requiredRole: Role) => {
 
   if (!hasRequiredRole) {
     //redirect('/unauthorized');
-    redirect('/');
+    redirect('/auth/signin');
   }
 
   return user;
