@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { Suspense } from 'react';
 import { UsersDataTable } from '@/components/users-data-table';
+import { requireAdmin } from '@/lib/roles';
 
 interface AdminUsersPageProps {
   searchParams: Promise<{
@@ -21,6 +22,8 @@ async function UsersList({
 }: {
   searchParams: AdminUsersPageProps['searchParams'];
 }) {
+  await requireAdmin();
+
   const resolvedParams = await searchParams;
   const page = parseInt(resolvedParams.page || '1');
   const limit = parseInt(resolvedParams.limit || '20');
