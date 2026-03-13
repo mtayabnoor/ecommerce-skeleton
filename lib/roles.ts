@@ -6,7 +6,6 @@ import { redirect } from 'next/navigation';
 export enum Role {
   USER = 'USER',
   ADMIN = 'ADMIN',
-  SUPER_ADMIN = 'SUPER_ADMIN',
 }
 
 export const PERMISSIONS = {
@@ -29,15 +28,21 @@ export const PERMISSIONS = {
   USER_DELETE: 'user:delete',
   USER_READ_ALL: 'user:read_all',
 
+  // Category permissions
+  CATEGORY_CREATE: 'category:create',
+  CATEGORY_READ: 'category:read',
+  CATEGORY_UPDATE: 'category:update',
+  CATEGORY_DELETE: 'category:delete',
+  CATEGORY_READ_ALL: 'category:read_all',
+
   // Admin permissions
   ADMIN_ACCESS: 'admin:access',
   ANALYTICS_READ: 'analytics:read',
   SETTINGS_UPDATE: 'settings:update',
 } as const;
 
-type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
-// Role-based permissions mapping
 const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   [Role.USER]: [
     PERMISSIONS.PRODUCT_READ,
@@ -59,116 +64,75 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     PERMISSIONS.USER_READ_ALL,
     PERMISSIONS.ADMIN_ACCESS,
     PERMISSIONS.ANALYTICS_READ,
+    PERMISSIONS.CATEGORY_CREATE,
+    PERMISSIONS.CATEGORY_READ,
+    PERMISSIONS.CATEGORY_UPDATE,
+    PERMISSIONS.CATEGORY_DELETE,
+    PERMISSIONS.CATEGORY_READ_ALL,
   ],
-  [Role.SUPER_ADMIN]: [...Object.values(PERMISSIONS)],
 };
 
-// Get current user session
+// --- CORE AUTH ---
+
 export const getCurrentUser = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
   return session?.user;
 };
 
-// Check if user has specific role
+// Helper to fetch permissions only once per request
+const getUserPermissions = async (): Promise<Permission[]> => {
+  const user = await getCurrentUser();
+  return user ? ROLE_PERMISSIONS[user.role as Role] || [] : [];
+};
+
+// --- BOOLEAN CHECKERS ---
+
 export const hasRole = async (requiredRole: Role) => {
   const user = await getCurrentUser();
-  if (!user) return false;
-
-  const userRole = user.role as Role;
-  return userRole === requiredRole || userRole === Role.SUPER_ADMIN;
+  return user?.role === requiredRole;
 };
 
-// Check if user has specific permission
 export const hasPermission = async (permission: Permission) => {
-  const user = await getCurrentUser();
-  if (!user) return false;
-
-  const userRole = user.role as Role;
-  const rolePermissions = ROLE_PERMISSIONS[userRole] || [];
-
-  return rolePermissions.includes(permission);
+  const perms = await getUserPermissions();
+  return perms.includes(permission);
 };
 
-// Check multiple permissions (user must have ALL)
 export const hasAllPermissions = async (permissions: Permission[]) => {
-  const results = await Promise.all(
-    permissions.map((permission) => hasPermission(permission)),
-  );
-  return results.every(Boolean);
+  const perms = await getUserPermissions();
+  return permissions.every((p) => perms.includes(p));
 };
 
-// Check multiple permissions (user must have at least ONE)
 export const hasAnyPermission = async (permissions: Permission[]) => {
-  const results = await Promise.all(
-    permissions.map((permission) => hasPermission(permission)),
-  );
-  return results.some(Boolean);
+  const perms = await getUserPermissions();
+  return permissions.some((p) => perms.includes(p));
 };
 
-// Require authentication
-export const requireAuth = async () => {
+export const isResourceOwner = (resourceUserId: string, currentUserId: string) =>
+  resourceUserId === currentUserId;
+
+// --- ROUTE GUARDS ---
+
+export const requireAuth = async (callbackUrl?: string) => {
   const user = await getCurrentUser();
-  if (!user) {
-    redirect('/auth/signin');
-  }
+  if (!user)
+    redirect('/auth/signin' + (callbackUrl ? `?callbackUrl=${callbackUrl}` : ''));
   return user;
 };
 
-// Require specific role
 export const requireRole = async (requiredRole: Role) => {
   const user = await requireAuth();
-  const hasRequiredRole = await hasRole(requiredRole);
-
-  if (!hasRequiredRole) {
-    //redirect('/unauthorized');
-    redirect('/auth/signin');
-  }
-
-  return user;
-};
-
-// Require specific permission
-export const requirePermission = async (permission: Permission) => {
-  const user = await requireAuth();
-  const hasRequiredPermission = await hasPermission(permission);
-
-  if (!hasRequiredPermission) {
+  if (user.role !== requiredRole) {
     redirect('/');
   }
-
   return user;
 };
 
-// Admin guard
-export const requireAdmin = async () => {
-  return await requireRole(Role.ADMIN);
-};
+export const requirePermission = async (permission: Permission) => {
+  const user = await requireAuth();
+  const perms = ROLE_PERMISSIONS[user.role as Role] || [];
 
-// Super admin guard
-export const requireSuperAdmin = async () => {
-  return await requireRole(Role.SUPER_ADMIN);
-};
-
-// Check if user can access admin area
-export const canAccessAdmin = async () => {
-  return await hasPermission(PERMISSIONS.ADMIN_ACCESS);
-};
-
-// Check if user can manage products
-export const canManageProducts = async () => {
-  return await hasAnyPermission([
-    PERMISSIONS.PRODUCT_CREATE,
-    PERMISSIONS.PRODUCT_UPDATE,
-    PERMISSIONS.PRODUCT_DELETE,
-  ]);
-};
-
-// Check if user can view all orders
-export const canViewAllOrders = async () => {
-  return await hasPermission(PERMISSIONS.ORDER_READ_ALL);
-};
-
-// Check if user owns resource
-export const isResourceOwner = (resourceUserId: string, currentUserId: string) => {
-  return resourceUserId === currentUserId;
+  if (!perms.includes(permission)) {
+    redirect('/');
+  }
+  return user;
 };

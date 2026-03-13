@@ -1,6 +1,6 @@
 'use client';
 
-import { updateOrderStatus } from '@/lib/server/actions/admin';
+//import { updateOrderStatus } from '@/lib/server/actions/order';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
 
@@ -27,7 +27,7 @@ export function OrderStatusSelector({
     const newStatus = e.target.value;
     startTransition(async () => {
       try {
-        await updateOrderStatus(orderId, newStatus);
+        //await updateOrderStatus(orderId, newStatus);
         toast.success('Order status updated to ' + newStatus);
       } catch (err) {
         toast.error('Failed to update order status');

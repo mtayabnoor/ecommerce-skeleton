@@ -1,16 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 
-const protectedRoutes = [
-  "/profile",
-  "/admin/dashboard",
-  "/admin/users",
-  "/admin/products",
-  "/admin/categories",
-  "/admin/settings",
-  "/admin/inventory",
-  "/help",
-];
+const protectedRoutes = ['/profile'];
+
+const adminRoutes = ['/admin'];
+
+const authRoutes = ['/auth'];
 
 export default async function proxy(req: NextRequest) {
   // Validate the actual session instead of only checking cookie
@@ -22,26 +17,33 @@ export default async function proxy(req: NextRequest) {
 
   const pathname = req.nextUrl.pathname;
 
-  const isOnProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+  const isOnProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
 
-  const isOnAuthRoute = pathname.startsWith("/auth");
+  const isOnAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
+
+  const isOnAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
   // Redirect unauthenticated users trying to access protected routes
   if (isOnProtectedRoute && !isLoggedIn) {
-    const signInUrl = new URL("/auth/signin", req.nextUrl);
+    const signInUrl = new URL('/auth/signin', req.nextUrl);
 
     // keep track of where they were going
-    signInUrl.searchParams.set("callbackUrl", pathname);
+    signInUrl.searchParams.set('callbackUrl', pathname);
 
     return NextResponse.redirect(signInUrl);
   }
 
+  // Block non-admin users from accessing admin routes
+  if (isOnAdminRoute && isLoggedIn) {
+    const userRole = (session?.user as any)?.role;
+    if (userRole !== 'ADMIN') {
+      return NextResponse.redirect(new URL('/', req.nextUrl));
+    }
+  }
+
   // Prevent logged in users from accessing auth pages
   if (isOnAuthRoute && isLoggedIn) {
-    const callbackUrl =
-      req.nextUrl.searchParams.get("callbackUrl") || "/profile";
+    const callbackUrl = req.nextUrl.searchParams.get('callbackUrl') || '/';
 
     return NextResponse.redirect(new URL(callbackUrl, req.nextUrl));
   }
@@ -51,6 +53,6 @@ export default async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$|robots.txt|sitemap.xml).*)",
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$|robots.txt|sitemap.xml).*)',
   ],
 };

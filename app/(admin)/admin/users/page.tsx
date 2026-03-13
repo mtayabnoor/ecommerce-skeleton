@@ -1,10 +1,10 @@
-import { getUsers } from '@/lib/server/actions/user';
+import { getUsers } from '@/lib/server/queries/user';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { Suspense } from 'react';
 import { UsersDataTable } from '@/components/users-data-table';
-import { requireAdmin } from '@/lib/roles';
+import { requireRole, Role } from '@/lib/roles';
 
 interface AdminUsersPageProps {
   searchParams: Promise<{
@@ -22,7 +22,7 @@ async function UsersList({
 }: {
   searchParams: AdminUsersPageProps['searchParams'];
 }) {
-  await requireAdmin();
+  await requireRole(Role.ADMIN);
 
   const resolvedParams = await searchParams;
   const page = parseInt(resolvedParams.page || '1');

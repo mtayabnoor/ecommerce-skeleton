@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { requireAdmin } from '@/lib/roles';
+import { requireRole, Role } from '@/lib/roles';
 import { AdminNav } from '@/components/admin-nav';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireAdmin();
+  const user = await requireRole(Role.ADMIN);
 
   return (
     <div className="flex h-screen bg-background text-foreground">

@@ -1,107 +1,169 @@
-import { getAdminCategories } from '@/lib/server/queries/admin';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Suspense } from 'react';
+import { Download } from 'lucide-react';
+import { getCategories } from '@/lib/server/queries/category';
+import { CategoriesDataTable } from '@/components/categories-data-table';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { ServerTrashButton } from './server-trash-button';
-import { createCategory } from '@/lib/server/actions/admin';
+import { Badge } from '@/components/ui/badge';
+import { formatPrice } from '@/lib/utils';
+import { ActionResponse } from '@/types';
+import { toast } from 'sonner';
+import { CategoriesFilters } from './categories-filter';
 
-export default async function AdminCategories() {
-  const categories = await getAdminCategories();
+export const dynamic = 'force-dynamic';
+
+interface AdminCategoriesPageProps {
+  searchParams: Promise<{
+    search?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    page?: string;
+    limit?: string;
+  }>;
+}
+
+async function CategoriesList({
+  searchParams,
+}: {
+  searchParams: AdminCategoriesPageProps['searchParams'];
+}) {
+  const resolvedParams = await searchParams;
+  const page = parseInt(resolvedParams.page || '1');
+  const limit = parseInt(resolvedParams.limit || '20');
+  const search = resolvedParams.search || '';
+  const dateFrom = resolvedParams.dateFrom
+    ? new Date(resolvedParams.dateFrom)
+    : undefined;
+  const dateTo = resolvedParams.dateTo ? new Date(resolvedParams.dateTo) : undefined;
+
+  const result: ActionResponse<any> = await getCategories({
+    page,
+    limit,
+    search,
+    dateFrom,
+    dateTo,
+  });
+
+  if (!result.success) {
+    toast.error(result.message);
+    return null;
+  }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage product categories and collections.
+    <div className="space-y-4">
+      <div className="flex items-center justify-between p-2">
+        <p className="text-sm text-muted-foreground">
+          Showing {(page - 1) * limit + 1}-
+          {Math.min(page * limit, result.data.pagination.total)} of{' '}
+          {result.data.pagination.total} categories
         </p>
+        <div className="flex items-center space-x-2">
+          <Badge variant="outline">{result.data.pagination.total} total</Badge>
+        </div>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-3">
-        {/* Create Category Form */}
-        <Card className="md:col-span-1 h-fit">
-          <CardHeader>
-            <CardTitle>Add Category</CardTitle>
-            <CardDescription>Create a new category for your store.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form action={createCategory} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" name="name" placeholder="e.g. Electronics" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Input
-                  id="description"
-                  name="description"
-                  placeholder="Optional details..."
-                />
-              </div>
-              <Button type="submit" className="w-full">
-                Create Category
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+      <CategoriesDataTable
+        data={result.data.categories.map((category: any) => ({
+          id: category.id,
+          name: category.name,
+          slug: category.slug,
+          createdAt: new Date(category.createdAt).toLocaleDateString(),
+        }))}
+        isLoading={false}
+        currentPage={page}
+        pageCount={result.data.pagination.pages}
+        limit={limit}
+      />
+    </div>
+  );
+}
 
-        {/* Categories List */}
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>All Categories</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-muted text-muted-foreground border-b">
-                  <tr>
-                    <th className="px-4 py-3 font-medium">Name</th>
-                    <th className="px-4 py-3 font-medium">Slug</th>
-                    <th className="px-4 py-3 font-medium text-center">Products</th>
-                    <th className="px-4 py-3 font-medium text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {categories.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={4}
-                        className="px-4 py-8 text-center text-muted-foreground"
-                      >
-                        No categories found.
-                      </td>
-                    </tr>
-                  ) : (
-                    categories.map((category) => (
-                      <tr
-                        key={category.id}
-                        className="hover:bg-muted/50 transition-colors"
-                      >
-                        <td className="px-4 py-3 font-medium">{category.name}</td>
-                        <td className="px-4 py-3 text-muted-foreground">
-                          {category.slug}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          {category._count.products}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <ServerTrashButton id={category.id} type="category" />
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+export default async function AdminCategoriesPage(props: AdminCategoriesPageProps) {
+  const searchParams = await props.searchParams;
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
+          <p className="text-muted-foreground">Manage categories</p>
+        </div>
+        <Button variant="outline">
+          <Download className="mr-2 h-4 w-4" />
+          Export
+        </Button>
+      </div>
+
+      {/* Filters */}
+      <CategoriesFilters />
+
+      {/* Categories Table */}
+      <div className="rounded-md border bg-card">
+        <Suspense
+          key={searchParams.page}
+          fallback={
+            <div className="p-8 text-center">
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
+              <p className="mt-2 text-sm text-muted-foreground">Loading categories...</p>
             </div>
-          </CardContent>
-        </Card>
+          }
+        >
+          <CategoriesList searchParams={props.searchParams} />
+        </Suspense>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid gap-4 md:grid-cols-5">
+        <div className="rounded-lg border bg-card text-card-foreground p-6">
+          <div className="flex items-center">
+            <div className="mr-3 h-8 w-2 rounded bg-primary" />
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                Total Categories
+              </p>
+              <p className="text-2xl font-bold">2,847</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card text-card-foreground p-6">
+          <div className="flex items-center">
+            <div className="mr-3 h-8 w-2 rounded bg-amber-500" />
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Pending</p>
+              <p className="text-2xl font-bold">42</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card text-card-foreground p-6">
+          <div className="flex items-center">
+            <div className="mr-3 h-8 w-2 rounded bg-purple-500" />
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Processing</p>
+              <p className="text-2xl font-bold">128</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card text-card-foreground p-6">
+          <div className="flex items-center">
+            <div className="mr-3 h-8 w-2 rounded bg-emerald-500" />
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Completed</p>
+              <p className="text-2xl font-bold">2,651</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card text-card-foreground p-6">
+          <div className="flex items-center">
+            <div className="mr-3 h-8 w-2 rounded bg-muted-foreground" />
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Revenue</p>
+              <p className="text-2xl font-bold">{formatPrice(500)}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
