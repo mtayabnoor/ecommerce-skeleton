@@ -1,15 +1,6 @@
 import Link from 'next/link';
 import { requireRole, Role } from '@/lib/roles';
-import { AdminNav } from '@/components/admin-nav';
-import { Button } from '@/components/ui/button';
-import {
-  LayoutDashboard,
-  Package,
-  ShoppingCart,
-  Users,
-  Settings,
-  LogOut,
-} from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users } from 'lucide-react';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireRole(Role.ADMIN);
