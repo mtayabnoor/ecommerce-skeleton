@@ -18,7 +18,7 @@ async function main() {
       email: adminEmail,
       password: adminPassword,
       name: 'Admin User',
-      role: UserRole.ADMIN,
+      role: UserRole.admin,
     },
   });
 
@@ -31,7 +31,7 @@ async function main() {
     create: {
       email: 'customer@example.com',
       name: 'John Doe',
-      role: UserRole.USER,
+      role: UserRole.user,
     },
   });
 

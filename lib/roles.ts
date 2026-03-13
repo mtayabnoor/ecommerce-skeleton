@@ -4,8 +4,8 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export enum Role {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
+  USER = 'user',
+  ADMIN = 'admin',
 }
 
 export const PERMISSIONS = {

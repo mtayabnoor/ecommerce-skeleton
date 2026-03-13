@@ -6,6 +6,7 @@ import { APP_HASH_ALGO } from './constants';
 import { hash as argon2Hash, verify as argon2Verify, argon2id } from 'argon2';
 import { hash as bcryptHash, compare as bcryptVerify } from 'bcrypt';
 import { createAuthMiddleware } from 'better-auth/api';
+import { admin } from 'better-auth/plugins';
 
 const HASH_ALGO = APP_HASH_ALGO;
 
@@ -13,7 +14,7 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
-  plugins: [nextCookies()],
+  plugins: [nextCookies(), admin()],
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 6,
@@ -65,7 +66,7 @@ export const auth = betterAuth({
     additionalFields: {
       firstName: { type: 'string', required: true },
       lastName: { type: 'string', required: true },
-      role: { type: ['USER', 'ADMIN'], required: true },
+      role: { type: ['user', 'admin'], required: true },
       address: { type: 'json', required: false },
       paymentMethod: { type: 'string', required: false },
     },

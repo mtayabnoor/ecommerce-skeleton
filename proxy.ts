@@ -36,7 +36,7 @@ export default async function proxy(req: NextRequest) {
   // Block non-admin users from accessing admin routes
   if (isOnAdminRoute && isLoggedIn) {
     const userRole = (session?.user as any)?.role;
-    if (userRole !== 'ADMIN') {
+    if (userRole !== 'admin') {
       return NextResponse.redirect(new URL('/', req.nextUrl));
     }
   }

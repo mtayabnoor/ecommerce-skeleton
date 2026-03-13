@@ -4,15 +4,14 @@
 
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/data-table';
-import { formatCurrency } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { UserRoleSelector } from '@/components/user-role-selector';
 
 export interface UserItem {
   id: string;
   name: string;
   email: string;
-  role: 'ADMIN' | 'USER';
+  role: 'admin' | 'user';
   date: string;
 }
 
@@ -56,6 +55,15 @@ export function UsersDataTable({
       header: 'Created At',
       cell: ({ row }) => (
         <span className="text-muted-foreground">{row.getValue('date')}</span>
+      ),
+    },
+    {
+      id: 'actions',
+      header: () => <div className="text-right">Actions</div>,
+      cell: ({ row }) => (
+        <div className="flex justify-end gap-2">
+          <UserRoleSelector userId={row.original.id} currentRole={row.original.role} />
+        </div>
       ),
     },
   ];

@@ -53,7 +53,7 @@ function UserButton() {
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuGroup>
-          {session.user.role === 'ADMIN' && (
+          {session.user.role === 'admin' && (
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link href="/admin/dashboard">Admin Dashboard</Link>
             </DropdownMenuItem>

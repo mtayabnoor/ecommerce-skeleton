@@ -41,7 +41,7 @@ function SignUpForm({ callbackUrl }: { callbackUrl?: string }) {
           password: result.data.password,
           firstName: result.data.firstName,
           lastName: result.data.lastName,
-          role: 'USER',
+          role: 'user',
         },
         {
           onRequest: () => {

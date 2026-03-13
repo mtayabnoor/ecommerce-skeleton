@@ -1,6 +1,6 @@
 'use client';
 
-import { updateUserRole } from '@/lib/server/actions/admin';
+import { updateUserRole } from '@/lib/server/actions/user';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
 
@@ -9,12 +9,12 @@ export function UserRoleSelector({
   currentRole,
 }: {
   userId: string;
-  currentRole: 'ADMIN' | 'USER';
+  currentRole: 'admin' | 'user';
 }) {
   const [isPending, startTransition] = useTransition();
 
   const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newRole = e.target.value as 'ADMIN' | 'USER';
+    const newRole = e.target.value as 'admin' | 'user';
     startTransition(async () => {
       try {
         await updateUserRole(userId, newRole);
@@ -32,8 +32,8 @@ export function UserRoleSelector({
       onChange={handleRoleChange}
       className="h-8 rounded-md border border-input bg-background px-2 py-1 text-xs ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      <option value="USER">USER</option>
-      <option value="ADMIN">ADMIN</option>
+      <option value="user">user</option>
+      <option value="admin">admin</option>
     </select>
   );
 }

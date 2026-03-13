@@ -23,7 +23,7 @@ export default async function NewProductPage() {
   async function createProduct(formData: FormData) {
     'use server';
     const session = await auth.api.getSession({ headers: await headers() });
-    if (session?.user?.role !== 'ADMIN') throw new Error('Unauthorized');
+    if (session?.user?.role !== 'admin') throw new Error('Unauthorized');
 
     const name = formData.get('name') as string;
     const price = formData.get('price') as string;
