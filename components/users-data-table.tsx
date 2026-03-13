@@ -6,6 +6,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/data-table';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { UserRoleSelector } from '@/components/user-role-selector';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
 export interface UserItem {
   id: string;
@@ -63,6 +65,13 @@ export function UsersDataTable({
       cell: ({ row }) => (
         <div className="flex justify-end gap-2">
           <UserRoleSelector userId={row.original.id} currentRole={row.original.role} />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push(`/admin/users/${row.original.id}`)}
+          >
+            <Trash2 className="h-2 w-2" />
+          </Button>
         </div>
       ),
     },
