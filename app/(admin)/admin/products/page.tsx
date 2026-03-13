@@ -113,49 +113,6 @@ export default async function AdminProductsPage(props: AdminProductsPageProps) {
           <ProductsList searchParams={props.searchParams} />
         </Suspense>
       </div>
-
-      {/* Quick Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <div className="rounded-lg border bg-card text-card-foreground p-6">
-          <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-primary" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Total Products</p>
-              <p className="text-2xl font-bold">1,234</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-card text-card-foreground p-6">
-          <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-emerald-500" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Published</p>
-              <p className="text-2xl font-bold">1,089</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-card text-card-foreground p-6">
-          <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-amber-500" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Low Stock</p>
-              <p className="text-2xl font-bold">23</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-card text-card-foreground p-6">
-          <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-destructive" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Out of Stock</p>
-              <p className="text-2xl font-bold">8</p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

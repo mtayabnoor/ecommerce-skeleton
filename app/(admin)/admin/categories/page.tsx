@@ -110,61 +110,6 @@ export default async function AdminCategoriesPage(props: AdminCategoriesPageProp
           <CategoriesList searchParams={props.searchParams} />
         </Suspense>
       </div>
-
-      {/* Quick Stats */}
-      <div className="grid gap-4 md:grid-cols-5">
-        <div className="rounded-lg border bg-card text-card-foreground p-6">
-          <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-primary" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                Total Categories
-              </p>
-              <p className="text-2xl font-bold">2,847</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-card text-card-foreground p-6">
-          <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-amber-500" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Pending</p>
-              <p className="text-2xl font-bold">42</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-card text-card-foreground p-6">
-          <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-purple-500" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Processing</p>
-              <p className="text-2xl font-bold">128</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-card text-card-foreground p-6">
-          <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-emerald-500" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Completed</p>
-              <p className="text-2xl font-bold">2,651</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-card text-card-foreground p-6">
-          <div className="flex items-center">
-            <div className="mr-3 h-8 w-2 rounded bg-muted-foreground" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Revenue</p>
-              <p className="text-2xl font-bold">{formatPrice(500)}</p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
